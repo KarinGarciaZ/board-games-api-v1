@@ -3,23 +3,23 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    res.send('get families');
+    res.send();
 });
 
 router.get('/:id', (req, res) => {
-    res.send('get families');
+    res.send();
 });
 
 router.post('/', (req, res) => {
-    res.send('post families');
+    res.send();
 });
 
 router.put('/:id', (req, res) => {
-    res.send('put families');
+    res.send();
 });
 
 router.delete('/:id', (req, res) => {
-    res.send('delete families');
+    res.send();
 });
 
 module.exports = { router };
