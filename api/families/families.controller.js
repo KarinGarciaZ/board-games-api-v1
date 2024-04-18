@@ -3,7 +3,7 @@ const FamiliesService = require('./families.service');
 
 const router = express.Router();
 router.get('/', async (req, res) => {
-    try { 
+    try {
         const families = await FamiliesService.getFamilies();
         res.status(200).json(families);
     } catch (error) {
@@ -11,8 +11,14 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', (req, res) => {
-    res.send('get families');
+router.get('/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const family = await FamiliesService.getFamily(id);
+        res.send(200).json(family);
+    } catch (error) {
+        res.send(500).json(error);
+    }
 });
 
 router.post('/', (req, res) => {

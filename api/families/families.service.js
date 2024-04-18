@@ -9,6 +9,16 @@ const getFamilies = async () => {
   }
 };
 
+const getFamily = async (id) => {
+  try {
+    const [ row ]= await connection.query(`SELECT * FROM families WHERE id = ?`, [id]);
+    return row;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
-  getFamilies
+  getFamilies,
+  getFamily
 }
