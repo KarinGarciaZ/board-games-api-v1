@@ -23,6 +23,24 @@ const getBrand = async (id) => {
 	}
 };
 
+const addBrand = async (body) => {
+	try {
+		await connection.query(`INSERT INTO brands SET ?`, [body]);
+		return;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const updateBrand = async (id, body) => {
+	try {
+		await connection.query(`UPDATE brands SET ? WHERE id = ?`, [body, id]);
+		return;
+	} catch (error) {
+		throw error;
+	}
+}
+
 const deleteBrand = async (id) => {
 	try {
 		await connection.query(`UPDATE brands SET deleted = true WHERE id = ?`, [id]);
@@ -30,10 +48,12 @@ const deleteBrand = async (id) => {
 	} catch (error) {
 			throw error;
 	}
-}
+};
 
 module.exports = {
 	getBrands,
 	getBrand,
+	addBrand,
+	updateBrand,
 	deleteBrand,
 };

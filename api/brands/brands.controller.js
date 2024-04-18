@@ -22,12 +22,26 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', (req, res) => {
-  return res.send();
+router.post('/', async (req, res) => {
+  const body = req.body;
+  body.id = null;
+  try {
+    await Brands.addBrand(body);
+    res.status(201).send();
+  } catch (error) {
+    res.status(500).send();
+  }
 });
 
-router.put('/:id', (req, res) => {
-  return res.send();
+router.put('/:id', async (req, res) => {
+  const id = req.params.id;
+  const {id: bodyId, ...body} = req.body
+  try {
+    await Brands.updateBrand(id, body);
+    res.status(201).send();
+  } catch(error) {
+    res.status(500).send();
+  }
 });
 
 router.delete('/:id', async (req, res) => {

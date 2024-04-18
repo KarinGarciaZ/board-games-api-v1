@@ -21,11 +21,11 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const body = req.body;
     body.id = null;
     try {
-        FamiliesService.addFamily(body);
+        await FamiliesService.addFamily(body);
         res.status(201).send();
     }  catch (error) {
         res.status(500).json(error);
