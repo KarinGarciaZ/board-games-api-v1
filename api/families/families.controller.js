@@ -15,9 +15,9 @@ router.get('/:id', async (req, res) => {
     const id = req.params.id;
     try {
         const family = await FamiliesService.getFamily(id);
-        res.send(200).json(family);
+        res.status(200).json(family);
     } catch (error) {
-        res.send(500).json(error);
+        res.status(500).json(error);
     }
 });
 
@@ -25,8 +25,15 @@ router.post('/', (req, res) => {
     res.send('post families');
 });
 
-router.put('/:id', (req, res) => {
-    res.send('put families');
+router.put('/:id', async (req, res) => {
+    const id = req.params.id;
+    const {id: idBody, ...body} = req.body;
+    try {
+        await FamiliesService.updateFamily(id, body);
+        res.status(201).send();
+    } catch (error) {
+        res.status(500).json(error);
+    }
 });
 
 router.delete('/:id', (req, res) => {

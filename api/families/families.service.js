@@ -2,8 +2,8 @@ const { connection } = require('../../sql/connection-sql');
 
 const getFamilies = async () => {
   try {
-    const resp = await connection.query(`SELECT * FROM families`);
-    return resp;
+    const [rows] = await connection.query(`SELECT * FROM families`);
+    return rows;
   } catch (error) {
     throw error;
   }
@@ -11,8 +11,17 @@ const getFamilies = async () => {
 
 const getFamily = async (id) => {
   try {
-    const [ row ]= await connection.query(`SELECT * FROM families WHERE id = ?`, [id]);
+    const [ row ] = await connection.query(`SELECT * FROM families WHERE id = ?`, [id]);
     return row;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateFamily = async (id, body) => {
+  try {
+    await connection.query(`UPDATE families SET ? WHERE id = ?`, [body, id]);
+    return;
   } catch (error) {
     throw error;
   }
@@ -20,5 +29,6 @@ const getFamily = async (id) => {
 
 module.exports = {
   getFamilies,
-  getFamily
+  getFamily,
+  updateFamily
 }
