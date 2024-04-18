@@ -15,9 +15,9 @@ router.get('/:id', async (req, res) => {
     const id = req.params.id;
     try {
         const family = await FamiliesService.getFamily(id);
-        res.send(200).json(family);
+        res.status(200).json(family);
     } catch (error) {
-        res.send(500).json(error);
+        res.status(500).json(error);
     }
 });
 
