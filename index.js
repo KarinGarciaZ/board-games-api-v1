@@ -1,13 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { router } = require('./api/router');
+const env = require('dotenv');
 
+env.config();
 const app = express();
 app.use(bodyParser.json());
 app.use(router);
 
-const port = 3000;
-const host = '127.0.0.1';
+const port = process.env.APP_PORT;
+const host = process.env.APP_HOST;
 
 app.listen(port, host, () => {
   console.log('¡Escuchando en puerto 3000!');
