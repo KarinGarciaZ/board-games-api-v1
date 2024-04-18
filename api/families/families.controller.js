@@ -22,7 +22,14 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    res.send('post families');
+    const body = req.body;
+    body.id = null;
+    try {
+        FamiliesService.addFamily(body);
+        res.status(201).send();
+    }  catch (error) {
+        res.status(500).json(error);
+    }
 });
 
 router.put('/:id', async (req, res) => {

@@ -11,12 +11,22 @@ const getFamilies = async () => {
 
 const getFamily = async (id) => {
   try {
-    const [ row ] = await connection.query(`SELECT * FROM families WHERE id = ?`, [id]);
+    const [row] = await connection.query(`SELECT * FROM families WHERE id = ?`, [id]);
     return row;
   } catch (error) {
     throw error;
   }
 };
+
+const addFamily = async (body) => {
+  try {
+    const [row] = await connection.query(`INSERT INTO families SET ?`, [body]);
+    console.log(row)
+    return row;
+  } catch (error) {
+    throw error;
+  }
+}
 
 const updateFamily = async (id, body) => {
   try {
@@ -30,5 +40,6 @@ const updateFamily = async (id, body) => {
 module.exports = {
   getFamilies,
   getFamily,
-  updateFamily
+  updateFamily,
+  addFamily
 }
