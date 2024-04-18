@@ -1,9 +1,14 @@
 const express = require('express');
+const FamiliesService = require('./families.service');
 
 const router = express.Router();
-
-router.get('/', (req, res) => {
-    res.send('get families');
+router.get('/', async (req, res) => {
+    try { 
+        const families = await FamiliesService.getFamilies();
+        res.status(200).json(families);
+    } catch (error) {
+        res.status(500).json(error);
+    }
 });
 
 router.get('/:id', (req, res) => {
