@@ -2,7 +2,7 @@ const { connection } = require('../../sql/connection-sql');
 
 const getFamilies = async () => {
   try {
-    const [rows] = await connection.query(`SELECT * FROM families`);
+    const [rows] = await connection.query(`SELECT * FROM families WHERE deleted = false`);
     return rows;
   } catch (error) {
     throw error;
@@ -11,8 +11,11 @@ const getFamilies = async () => {
 
 const getFamily = async (id) => {
   try {
-    const [row] = await connection.query(`SELECT * FROM families WHERE id = ?`, [id]);
-    return row;
+    const [rows] = await connection.query(`SELECT * FROM families WHERE id = ? AND deleted = false`, [id]);
+    if (rows.length) {
+      return rows[0];
+    }
+    return {};
   } catch (error) {
     throw error;
   }
@@ -37,9 +40,19 @@ const updateFamily = async (id, body) => {
   }
 };
 
+const deleteFamily = async (id) => {
+  try {
+    await connection.query(`UPDATE families SET deleted = true WHERE id = ?`, [id]);
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   getFamilies,
   getFamily,
   updateFamily,
-  addFamily
+  addFamily,
+  deleteFamily
 }
