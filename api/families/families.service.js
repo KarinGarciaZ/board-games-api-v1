@@ -24,7 +24,6 @@ const getFamily = async (id) => {
 const addFamily = async (body) => {
   try {
     const [row] = await connection.query(`INSERT INTO families SET ?`, [body]);
-    console.log(row)
     return row;
   } catch (error) {
     throw error;
