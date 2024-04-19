@@ -10,6 +10,7 @@ const familiesMock = [
   { id: null, name: 'Ticket to Ride', deleted: false },
   { id: null, name: 'Exploding Kittens', deleted: false },
   { id: null, name: 'Spot It', deleted: false },
+  { id: null, name: 'Phase 10', deleted: false },
 ];
 
 module.exports = {
