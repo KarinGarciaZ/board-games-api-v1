@@ -7,7 +7,7 @@ const getGames = async () => {
   } catch (error) {
     throw error;
   }
-}
+};
 
 const getGame = async (id) => {
   try {
@@ -21,9 +21,39 @@ const getGame = async (id) => {
   } catch (error) {
     throw error;
   }
-}
+};
+
+const addGame = async (body) => {
+  try {
+    await connection.query(`INSERT INTO games SET ?`, [body]);
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateGame = async (id, body) => {
+  try {
+    await connection.query(`UPDATE games SET ? WHERE id = ?`, [body, id]);
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteGame = async (id) => {
+  try {
+    await connection.query(`UPDATE games SET deleted = true WHERE id = ?`, [id]);
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
 
 module.exports = {
   getGames,
-  getGame
+  getGame,
+  addGame,
+  updateGame,
+  deleteGame
 };

@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
     const brands = await Brands.getBrands();
     res.status(200).json(brands);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json(error);
   }
 });
 
@@ -18,7 +18,7 @@ router.get('/:id', async (req, res) => {
     const brand = await Brands.getBrand(id);
     res.status(200).json(brand);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json(error);
   }
 });
 
@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
     await Brands.addBrand(body);
     res.status(201).send();
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json(error);
   }
 });
 
@@ -40,7 +40,7 @@ router.put('/:id', async (req, res) => {
     await Brands.updateBrand(id, body);
     res.status(201).send();
   } catch(error) {
-    res.status(500).send();
+    res.status(500).json(error);
   }
 });
 
@@ -50,7 +50,7 @@ router.delete('/:id', async (req, res) => {
     await Brands.deleteBrand(id);
     res.status(200).send();
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json(error);
   }
 });
 
