@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
     const games = await Games.getGames();
     res.status(200).json(games);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json(error);
   }
 });
 
@@ -18,20 +18,40 @@ router.get('/:id', async (req, res) => {
     const game = await Games.getGame(id);
     res.status(200).json(game);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json(error);
   }
 });
 
-router.post('/', (req, res) => {
-    res.send();
+router.post('/', async (req, res) => {
+    const body = req.body;
+    body.id = null;
+    try {
+      await Games.addGame(body);
+      res.status(201).send();
+    } catch (error) {
+      res.status(500).json(error);
+    }
 });
 
-router.put('/:id', (req, res) => {
-    res.send();
+router.put('/:id', async (req, res) => {
+    const id = req.params.id;
+    const {id: bodyId, ...body} = req.body;
+    try {
+      await Games.updateGame(id, body)
+      res.status(201).send();
+    } catch (error) {
+      res.status(500).json(error);
+    }
 });
 
-router.delete('/:id', (req, res) => {
-    res.send();
+router.delete('/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    await Games.deleteGame(id)
+    res.status(200).send();
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
 
 module.exports = { router };
