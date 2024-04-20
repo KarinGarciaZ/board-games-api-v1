@@ -3,7 +3,16 @@ const { connection } = require('../../sql/connection-sql');
 const getFamilies = async () => {
   try {
     const [rows] = await connection.query(`SELECT * FROM families WHERE deleted = false`);
-    return rows;
+    const newFamilies = rows.map(async (row) => {
+        const familyId = row.id;
+        const [gamesRows] = await connection.query(`SELECT * FROM games WHERE family_id = ? AND deleted = false`, [familyId]);
+        return {
+          ...row,
+          games: gamesRows
+        }
+    });
+    const families = await Promise.all(newFamilies);
+    return families;
   } catch (error) {
     throw error;
   }
