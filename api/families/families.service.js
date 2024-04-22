@@ -53,12 +53,18 @@ const updateFamily = async (id, body) => {
 };
 
 const deleteFamily = async (id) => {
+  const newConnection = await connection.getConnection();
   try {
-    await connection.query(`UPDATE families SET deleted = true WHERE id = ?`, [id]);
-    return;
+    await newConnection.beginTransaction();
+    await newConnection.query(`UPDATE families SET deleted = true WHERE id = ?`, [id]);
+    await newConnection.query(`UPDATE games SET deleted = true WHERE family_id = ?`, [id]);
+    await newConnection.commit();
   } catch (error) {
+    await newConnection.rollback();
     throw error;
   }
+  await newConnection.end();
+  return;
 };
 
 module.exports = {
