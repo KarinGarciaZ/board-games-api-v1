@@ -1,25 +1,51 @@
 const { connection } = require('../../sql/connection-sql');
 
 const getBrands = async () => {
+	const sqlConnection = await connection.getConnection();
 	try {
-			const [rows] = await connection.query(`SELECT * FROM brands WHERE deleted = false`);
-			return rows;
+		await sqlConnection.beginTransaction();
+		const [brands] = await sqlConnection.query(
+			`SELECT * FROM brands WHERE deleted = false`
+		);
+
+		const brandsPromises = brands.map(async brand => {
+			const [games] = await sqlConnection.query(
+				`SELECT * FROM games WHERE brand_id = ? AND deleted = false`, [brand.id]
+			);
+			return { ...brand, games };
+		});
+		if (brandsPromises.length) {
+			const brandsToReturn = await Promise.all(brandsPromises);
+			await sqlConnection.commit();
+			return brandsToReturn;
+		}
+		return {};
 	} catch (error) {
-			throw error;
+		await sqlConnection.rollback();
+		throw error;
 	}
 };
 
 const getBrand = async (id) => {
+	const sqlConnection = await connection.getConnection();
 	try {
-		const [rows] = await connection.query(
+		await sqlConnection.beginTransaction();
+		const [brands] = await sqlConnection.query(
 			`SELECT * FROM brands WHERE id = ? AND deleted = false`, [id]
 		);
-		if (rows.length) {
-			return rows[0];
+		const [games] = await sqlConnection.query(
+			`SELECT * FROM games WHERE brand_id = ? AND deleted = false`, [id]
+		);
+		if (brands.length) {
+			const brand = brands[0];
+			brand.games = games;
+			await sqlConnection.commit();
+			return brand;
 		}
 		return {};
 	} catch (error) {
-			throw error;
+		await sqlConnection.rollback();
+		throw error;
 	}
 };
 
