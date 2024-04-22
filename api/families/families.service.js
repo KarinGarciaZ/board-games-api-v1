@@ -21,8 +21,12 @@ const getFamilies = async () => {
 const getFamily = async (id) => {
   try {
     const [rows] = await connection.query(`SELECT * FROM families WHERE id = ? AND deleted = false`, [id]);
+    const [gamesRows] = await connection.query(`SELECT * FROM games WHERE family_id = ? AND deleted = false`, [id]);
     if (rows.length) {
-      return rows[0];
+      return {
+        ...rows[0],
+        games: gamesRows
+      };
     }
     return {};
   } catch (error) {
