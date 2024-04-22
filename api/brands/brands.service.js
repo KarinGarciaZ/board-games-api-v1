@@ -1,50 +1,42 @@
 const { connection } = require('../../sql/connection-sql');
 
 const getBrands = async () => {
-	const sqlConnection = await connection.getConnection();
 	try {
-		await sqlConnection.beginTransaction();
-		const [brands] = await sqlConnection.query(
+		const [brands] = await connection.query(
 			`SELECT * FROM brands WHERE deleted = false`
 		);
 
 		const brandsPromises = brands.map(async brand => {
-			const [games] = await sqlConnection.query(
+			const [games] = await connection.query(
 				`SELECT * FROM games WHERE brand_id = ? AND deleted = false`, [brand.id]
 			);
 			return { ...brand, games };
 		});
 		if (brandsPromises.length) {
 			const brandsToReturn = await Promise.all(brandsPromises);
-			await sqlConnection.commit();
 			return brandsToReturn;
 		}
-		return {};
+		return [];
 	} catch (error) {
-		await sqlConnection.rollback();
 		throw error;
 	}
 };
 
 const getBrand = async (id) => {
-	const sqlConnection = await connection.getConnection();
 	try {
-		await sqlConnection.beginTransaction();
-		const [brands] = await sqlConnection.query(
+		const [brands] = await connection.query(
 			`SELECT * FROM brands WHERE id = ? AND deleted = false`, [id]
 		);
-		const [games] = await sqlConnection.query(
+		const [games] = await connection.query(
 			`SELECT * FROM games WHERE brand_id = ? AND deleted = false`, [id]
 		);
 		if (brands.length) {
 			const brand = brands[0];
 			brand.games = games;
-			await sqlConnection.commit();
 			return brand;
 		}
 		return {};
 	} catch (error) {
-		await sqlConnection.rollback();
 		throw error;
 	}
 };
@@ -68,11 +60,16 @@ const updateBrand = async (id, body) => {
 }
 
 const deleteBrand = async (id) => {
+	const sqlConnection = await connection.getConnection();
 	try {
-		await connection.query(`UPDATE brands SET deleted = true WHERE id = ?`, [id]);
+		await sqlConnection.beginTransaction();
+		await sqlConnection.query(`UPDATE brands SET deleted = true WHERE id = ?`, [id]);
+		await sqlConnection.query(`UPDATE games SET deleted = true WHER brand_id = ?`, [id]);
+		await sqlConnection.commit();
 		return;
 	} catch (error) {
-			throw error;
+		await sqlConnection.rollback();
+		throw error;
 	}
 };
 
