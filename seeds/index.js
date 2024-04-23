@@ -1,5 +1,6 @@
 const { connection } = require('../sql/connection-sql');
 const { brandsMock } = require('./brands.mock');
+const { extensionsMock } = require('./extensions');
 const { familiesMock } = require('./families.mock');
 const { gamesMock } = require('./games.mock');
 const { versionsMock } = require('./versions.mock');
@@ -31,6 +32,12 @@ const seedDatabase = async () => {
       for (const version of versionsMock) {
         await newConnection.query(
           'INSERT INTO versions SET ?', [version]
+        );
+      }
+
+      for (const extension of extensionsMock) {
+        await newConnection.query(
+          'INSERT INTO extensions SET ?', [extension]
         );
       }
 

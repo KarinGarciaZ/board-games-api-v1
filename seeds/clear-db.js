@@ -8,6 +8,7 @@ const seedDatabase = async () => {
     await newConnection.query('TRUNCATE TABLE brands');
     await newConnection.query('TRUNCATE TABLE games');
     await newConnection.query('TRUNCATE TABLE versions');
+    await newConnection.query('TRUNCATE TABLE extensions');
 
     await newConnection.commit();
 
