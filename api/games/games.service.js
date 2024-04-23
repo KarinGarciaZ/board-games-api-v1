@@ -2,8 +2,8 @@ const { connection } = require('../../sql/connection-sql');
 
 const getGames = async () => {
   try {
-    const [rows] = await connection.query(`SELECT * FROM games WHERE deleted = false`);
-    const games = rows.map(async game => {
+    const [gamesRows] = await connection.query(`SELECT * FROM games WHERE deleted = false`);
+    const games = gamesRows.map(async game => {
       const [brands] = await connection.query(`SELECT * FROM brands WHERE id = ?`, [game.brand_id]);
       return {
         ...game,
