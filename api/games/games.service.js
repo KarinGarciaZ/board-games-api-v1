@@ -19,11 +19,30 @@ const getGames = async () => {
 
 const getGame = async (id) => {
   try {
-    const [rows] = await connection.query(
+    const [gamesRows] = await connection.query(
       `SELECT * FROM games WHERE id = ? AND deleted = false`, [id]
     );
+    const [familiesRows] = await connection.query(
+      `SELECT * FROM families WHERE id = ?`, [gamesRows[0].family_id]
+    );
+    const [brandsRows] = await connection.query(
+      `SELECT * FROM brands WHERE id = ?`, [gamesRows[0].brand_id]
+    );
+    const [versionsRows] = await connection.query(
+      `SELECT * FROM versions WHERE game_id = ? AND deleted = false`, [id]
+    );
+    const [extensionsRows] = await connection.query(
+      `SELECT * FROM extensions WHERE game_id = ? AND deleted = false`, [id]
+    );
+    //files
     if (rows.length) {
-      return rows[0];
+      return {
+        ...gamesRows[0],
+        family: {...familiesRows[0]},
+        brand: {...brandsRows[0]},
+        versions: versionsRows,
+        extensions: extensionsRows
+      };
     }
     return {};
   } catch (error) {
