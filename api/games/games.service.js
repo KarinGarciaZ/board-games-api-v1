@@ -3,7 +3,15 @@ const { connection } = require('../../sql/connection-sql');
 const getGames = async () => {
   try {
     const [rows] = await connection.query(`SELECT * FROM games WHERE deleted = false`);
-    return rows;
+    const games = rows.map(async game => {
+      const [brands] = await connection.query(`SELECT * FROM brands WHERE id = ?`, [game.brand_id]);
+      return {
+        ...game,
+        brand: {...brands[0]}
+      }
+    });
+    const gamesToReturn = await Promise.all(games);
+    return gamesToReturn;
   } catch (error) {
     throw error;
   }
@@ -42,10 +50,16 @@ const updateGame = async (id, body) => {
 };
 
 const deleteGame = async (id) => {
+  const newConnection = await connection.getConnection();
   try {
-    await connection.query(`UPDATE games SET deleted = true WHERE id = ?`, [id]);
+    await newConnection.beginTransaction();
+    await newConnection.query(`UPDATE games SET deleted = true WHERE id = ?`, [id]);
+    await newConnection.query(`UPDATE versions SET deleted = true WHERE game_id = ?`, [id]);
+    await newConnection.query(`UPDATE extensions SET deleted = true WHERE game_id = ?`, [id]);
+    await newConnection.commit();
     return;
   } catch (error) {
+    await newConnection.rollback();
     throw error;
   }
 };
