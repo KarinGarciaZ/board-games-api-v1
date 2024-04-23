@@ -1,5 +1,6 @@
 const express = require('express');
 const Games = require('./games.service');
+const Versions = require('../versions/versions.service');
 
 const router = express.Router();
 
@@ -16,6 +17,16 @@ router.get('/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const game = await Games.getGame(id);
+    res.status(200).json(game);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.get('/:id/versions', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const game = await Versions.getVersionsByGameId(id);
     res.status(200).json(game);
   } catch (error) {
     res.status(500).json(error);
