@@ -1,5 +1,6 @@
 const express = require('express');
 const Games = require('./games.service');
+const Extensions = require('../extensions/extensions.service');
 
 const router = express.Router();
 
@@ -17,6 +18,16 @@ router.get('/:id', async (req, res) => {
     const id = req.params.id;
     const game = await Games.getGame(id);
     res.status(200).json(game);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.get('/:id/extensions', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const extensions = await Extensions.getExtensionsByGameId(id);
+    res.status(200).json(extensions);
   } catch (error) {
     res.status(500).json(error);
   }
