@@ -35,7 +35,7 @@ const getGame = async (id) => {
       `SELECT * FROM extensions WHERE game_id = ? AND deleted = false`, [id]
     );
     //files
-    if (rows.length) {
+    if (gamesRows.length) {
       return {
         ...gamesRows[0],
         family: {...familiesRows[0]},
