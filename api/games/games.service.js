@@ -22,20 +22,21 @@ const getGame = async (id) => {
     const [gamesRows] = await connection.query(
       `SELECT * FROM games WHERE id = ? AND deleted = false`, [id]
     );
-    const [familiesRows] = await connection.query(
-      `SELECT * FROM families WHERE id = ?`, [gamesRows[0].family_id]
-    );
-    const [brandsRows] = await connection.query(
-      `SELECT * FROM brands WHERE id = ?`, [gamesRows[0].brand_id]
-    );
-    const [versionsRows] = await connection.query(
-      `SELECT * FROM versions WHERE game_id = ? AND deleted = false`, [id]
-    );
-    const [extensionsRows] = await connection.query(
-      `SELECT * FROM extensions WHERE game_id = ? AND deleted = false`, [id]
-    );
-    //files
     if (gamesRows.length) {
+      const [familiesRows] = await connection.query(
+        `SELECT * FROM families WHERE id = ?`, [gamesRows[0].family_id]
+      );
+      const [brandsRows] = await connection.query(
+        `SELECT * FROM brands WHERE id = ?`, [gamesRows[0].brand_id]
+      );
+      const [versionsRows] = await connection.query(
+        `SELECT * FROM versions WHERE game_id = ? AND deleted = false`, [id]
+      );
+      const [extensionsRows] = await connection.query(
+        `SELECT * FROM extensions WHERE game_id = ? AND deleted = false`, [id]
+      );
+      //files
+
       return {
         ...gamesRows[0],
         family: {...familiesRows[0]},
