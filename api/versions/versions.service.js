@@ -11,6 +11,37 @@ const getVersionsByGameId = async (gameId) => {
   }
 };
 
+const createVersion = async (version) => {
+  try {
+    await connection.query('INSERT INTO versions SET ?', [version]);
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateVersion = async (id , version) => {
+  try {
+    await connection.query('UPDATE versions SET ? WHERE id = ?', [version, id]);
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteVersion = async (id) => {
+  try {
+    await connection.query('UPDATE versions SET deleted = true WHERE id = ?', [id]);
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 module.exports = {
-  getVersionsByGameId
+  getVersionsByGameId,
+  createVersion,
+  updateVersion,
+  deleteVersion
 };
