@@ -65,6 +65,8 @@ const deleteBrand = async (id) => {
 		await sqlConnection.beginTransaction();
 		await sqlConnection.query(`UPDATE brands SET deleted = true WHERE id = ?`, [id]);
 		await sqlConnection.query(`UPDATE games SET deleted = true WHER brand_id = ?`, [id]);
+		//version
+		//extension
 		await sqlConnection.commit();
 		return;
 	} catch (error) {

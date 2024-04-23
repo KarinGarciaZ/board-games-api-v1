@@ -3,6 +3,8 @@ const { connection } = require('../../sql/connection-sql');
 const getGames = async () => {
   try {
     const [rows] = await connection.query(`SELECT * FROM games WHERE deleted = false`);
+    //brand
+    //files
     return rows;
   } catch (error) {
     throw error;
@@ -11,11 +13,30 @@ const getGames = async () => {
 
 const getGame = async (id) => {
   try {
-    const [rows] = await connection.query(
+    const [gamesRows] = await connection.query(
       `SELECT * FROM games WHERE id = ? AND deleted = false`, [id]
     );
+    const [familiesRows] = await connection.query(
+      `SELECT * FROM families WHERE id = ?`, [gamesRows[0].family_id]
+    );
+    const [brandsRows] = await connection.query(
+      `SELECT * FROM brands WHERE id = ?`, [gamesRows[0].brand_id]
+    );
+    const [versionsRows] = await connection.query(
+      `SELECT * FROM versions WHERE game_id = ? AND deleted = false`, [id]
+    );
+    const [extensionsRows] = await connection.query(
+      `SELECT * FROM extensions WHERE game_id = ? AND deleted = false`, [id]
+    );
+    //files
     if (rows.length) {
-      return rows[0];
+      return {
+        ...gamesRows[0],
+        family: {...familiesRows[0]},
+        brand: {...brandsRows[0]},
+        versions: versionsRows,
+        extensions: extensionsRows
+      };
     }
     return {};
   } catch (error) {
@@ -44,6 +65,9 @@ const updateGame = async (id, body) => {
 const deleteGame = async (id) => {
   try {
     await connection.query(`UPDATE games SET deleted = true WHERE id = ?`, [id]);
+    //extension
+    //version
+    //files
     return;
   } catch (error) {
     throw error;

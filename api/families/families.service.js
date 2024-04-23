@@ -58,6 +58,8 @@ const deleteFamily = async (id) => {
     await newConnection.beginTransaction();
     await newConnection.query(`UPDATE families SET deleted = true WHERE id = ?`, [id]);
     await newConnection.query(`UPDATE games SET deleted = true WHERE family_id = ?`, [id]);
+    //version
+    //extension
     await newConnection.commit();
   } catch (error) {
     await newConnection.rollback();
