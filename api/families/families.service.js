@@ -1,5 +1,7 @@
 const { connection } = require('../../sql/connection-sql');
 const { getGamesByFamilyId } = require('../games/games.utils');
+const ExtensionsService = require('../extensions/extensions.service');
+const VersionsService = require('../versions/versions.service');
 
 const getFamilies = async () => {
   try {
@@ -60,16 +62,16 @@ const deleteFamily = async (id) => {
     await newConnection.query(`UPDATE families SET deleted = true WHERE id = ?`, [id]);
     const games = await getGamesByFamilyId(id);
     for (const game of games) {
-      await newConnection.query(`UPDATE versions SET deleted = true WHERE game_id = ?`, [game.id]);
-      await newConnection.query(`UPDATE extensions SET deleted = true WHERE game_id = ?`, [game.id]);
+      await VersionsService.deleteVersionByGameId(game.id, newConnection);
+      await ExtensionsService.deleteExtensionByGameId(game.id, newConnection);
     };
     await newConnection.query(`UPDATE games SET deleted = true WHERE family_id = ?`, [id]);
     await newConnection.commit();
+    return;
   } catch (error) {
     await newConnection.rollback();
     throw error;
   }
-  return;
 };
 
 module.exports = {
