@@ -41,7 +41,7 @@ const updateExtension = async (id, body) => {
 
 const deleteExtension = async (id) => {
   try {
-    await connection.query(`UPDATE extensions SET deleted = true WHERE ID = ?`, [id]);
+    await connection.query(`UPDATE extensions SET deleted = true WHERE id = ?`, [id]);
     return;
   } catch (error) {
     throw (error)

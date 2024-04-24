@@ -27,7 +27,7 @@ const getGame = async (id) => {
       `SELECT * FROM games WHERE id = ? AND deleted = false`, [id]
     );
     if (gamesRows.length) {
-      const [familiesRows] = await getFamilybyId(gamesRows[0].family_id);
+      const family = await getFamilybyId(gamesRows[0].family_id);
       const brand = await getBrandById(gamesRows[0].brand_id);
       const [versionsRows] = await connection.query(
         `SELECT * FROM versions WHERE game_id = ? AND deleted = false`, [id]
@@ -39,7 +39,7 @@ const getGame = async (id) => {
 
       return {
         ...gamesRows[0],
-        family: {...familiesRows[0]},
+        family,
         brand,
         versions: versionsRows,
         extensions: extensionsRows

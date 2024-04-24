@@ -24,11 +24,11 @@ const getFamilies = async () => {
 
 const getFamily = async (familyId) => {
   try {
-    const [rows] = await getFamilybyId(familyId);
+    const family = await getFamilybyId(familyId);
     const games = await getGamesByFamilyId(familyId);
-    if (rows.length) {
+    if (family) {
       return {
-        ...rows[0],
+        ...family,
         games
       };
     }
