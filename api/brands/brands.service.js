@@ -1,4 +1,6 @@
 const { connection } = require('../../sql/connection-sql');
+const { getGamesByBrandId } = require('../games/games.utils');
+const { getBrandById } = require('./brands.utils');
 
 const getBrands = async () => {
 	try {
@@ -7,9 +9,7 @@ const getBrands = async () => {
 		);
 
 		const brandsPromises = brands.map(async brand => {
-			const [games] = await connection.query(
-				`SELECT * FROM games WHERE brand_id = ? AND deleted = false`, [brand.id]
-			);
+			const games = await getGamesByBrandId(brand.id);
 			return { ...brand, games };
 		});
 		if (brandsPromises.length) {
@@ -22,18 +22,12 @@ const getBrands = async () => {
 	}
 };
 
-const getBrand = async (id) => {
+const getBrand = async (brandId) => {
 	try {
-		const [brands] = await connection.query(
-			`SELECT * FROM brands WHERE id = ? AND deleted = false`, [id]
-		);
-		const [games] = await connection.query(
-			`SELECT * FROM games WHERE brand_id = ? AND deleted = false`, [id]
-		);
-		if (brands.length) {
-			const brand = brands[0];
-			brand.games = games;
-			return brand;
+		const brand = await getBrandById(brandId);
+		const games = await getGamesByBrandId(brandId);
+		if (brand) {
+			return {...brand, games};
 		}
 		return {};
 	} catch (error) {
@@ -64,7 +58,7 @@ const deleteBrand = async (id) => {
 	try {
 		await sqlConnection.beginTransaction();
 		await sqlConnection.query(`UPDATE brands SET deleted = true WHERE id = ?`, [id]);
-		const [games] = await sqlConnection.query(`SELECT id from games WHERE brand_id = ? AND deleted = false`, [id]);
+		const games = await getGamesByBrandId(id);
 		await sqlConnection.query(`UPDATE games SET deleted = true WHERE brand_id = ?`, [id]);
 		for (const game of games) {
 			await sqlConnection.query(`UPDATE versions SET deleted = true WHERE game_id = ?`, [game.id]);
@@ -78,10 +72,12 @@ const deleteBrand = async (id) => {
 	}
 };
 
+
+
 module.exports = {
 	getBrands,
 	getBrand,
 	addBrand,
 	updateBrand,
-	deleteBrand,
+	deleteBrand
 };

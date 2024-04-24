@@ -1,14 +1,15 @@
 const { connection } = require('../../sql/connection-sql');
+const { getGamesByFamilyId } = require('../games/games.utils');
 
 const getFamilies = async () => {
   try {
     const [rows] = await connection.query(`SELECT * FROM families WHERE deleted = false`);
     const newFamilies = rows.map(async (row) => {
         const familyId = row.id;
-        const [gamesRows] = await connection.query(`SELECT * FROM games WHERE family_id = ? AND deleted = false`, [familyId]);
+        const games = await getGamesByFamilyId(familyId);
         return {
           ...row,
-          games: gamesRows
+          games
         }
     });
     const families = await Promise.all(newFamilies);
@@ -18,14 +19,14 @@ const getFamilies = async () => {
   }
 };
 
-const getFamily = async (id) => {
+const getFamily = async (familyId) => {
   try {
-    const [rows] = await connection.query(`SELECT * FROM families WHERE id = ? AND deleted = false`, [id]);
-    const [gamesRows] = await connection.query(`SELECT * FROM games WHERE family_id = ? AND deleted = false`, [id]);
+    const [rows] = await connection.query(`SELECT * FROM families WHERE id = ? AND deleted = false`, [familyId]);
+    const games = await getGamesByFamilyId(familyId);
     if (rows.length) {
       return {
         ...rows[0],
-        games: gamesRows
+        games
       };
     }
     return {};
@@ -57,8 +58,8 @@ const deleteFamily = async (id) => {
   try {
     await newConnection.beginTransaction();
     await newConnection.query(`UPDATE families SET deleted = true WHERE id = ?`, [id]);
-    const [gamesRows] = await newConnection.query(`SELECT id FROM games WHERE family_id = ? AND deleted = false`, [id]);
-    for (const game of gamesRows) {
+    const games = await getGamesByFamilyId(id);
+    for (const game of games) {
       await newConnection.query(`UPDATE versions SET deleted = true WHERE game_id = ?`, [game.id]);
       await newConnection.query(`UPDATE extensions SET deleted = true WHERE game_id = ?`, [game.id]);
     };
@@ -68,7 +69,6 @@ const deleteFamily = async (id) => {
     await newConnection.rollback();
     throw error;
   }
-  await newConnection.end();
   return;
 };
 

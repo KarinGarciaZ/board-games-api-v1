@@ -1,13 +1,14 @@
 const { connection } = require('../../sql/connection-sql');
+const { getBrandById } = require('../brands/brands.utils');
 
 const getGames = async () => {
   try {
     const [gamesRows] = await connection.query(`SELECT * FROM games WHERE deleted = false`);
     const games = gamesRows.map(async game => {
-      const [brands] = await connection.query(`SELECT * FROM brands WHERE id = ?`, [game.brand_id]);
+      const brand = await getBrandById(game.brand_id);
       return {
         ...game,
-        brand: {...brands[0]}
+        brand
       }
     });
     const gamesToReturn = await Promise.all(games);
@@ -26,9 +27,7 @@ const getGame = async (id) => {
       const [familiesRows] = await connection.query(
         `SELECT * FROM families WHERE id = ?`, [gamesRows[0].family_id]
       );
-      const [brandsRows] = await connection.query(
-        `SELECT * FROM brands WHERE id = ?`, [gamesRows[0].brand_id]
-      );
+      const brand = await getBrandById(gamesRows[0].brand_id);
       const [versionsRows] = await connection.query(
         `SELECT * FROM versions WHERE game_id = ? AND deleted = false`, [id]
       );
@@ -40,7 +39,7 @@ const getGame = async (id) => {
       return {
         ...gamesRows[0],
         family: {...familiesRows[0]},
-        brand: {...brandsRows[0]},
+        brand,
         versions: versionsRows,
         extensions: extensionsRows
       };
@@ -89,5 +88,5 @@ module.exports = {
   getGame,
   addGame,
   updateGame,
-  deleteGame
+  deleteGame,
 };
