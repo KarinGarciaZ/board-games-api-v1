@@ -1,6 +1,6 @@
 const { connection } = require('../../sql/connection-sql');
-const ExtensionsService = require('../extensions/extensions.service');
-const VersionsService = require('../versions/versions.service');
+const ExtensionsUtils = require('../extensions/extensions.utils');
+const VersionsUtils = require('../versions/versions.utils');
 
 const getBrands = async () => {
 	try {
@@ -69,8 +69,8 @@ const deleteBrand = async (id) => {
 		const [games] = await sqlConnection.query(`SELECT id from games WHERE brand_id = ? AND deleted = false`, [id]);
 		await sqlConnection.query(`UPDATE games SET deleted = true WHERE brand_id = ?`, [id]);
 		for (const game of games) {
-			await VersionsService.deleteVersionByGameId(game.id, sqlConnection);
-			await ExtensionsService.deleteExtensionByGameId(game.id, sqlConnection);
+			await VersionsUtils.deleteVersionByGameId(game.id, sqlConnection);
+			await ExtensionsUtils.deleteExtensionByGameId(game.id, sqlConnection);
 		}
 		await sqlConnection.commit();
 		return;
