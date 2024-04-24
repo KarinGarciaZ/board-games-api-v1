@@ -2,6 +2,7 @@ const { connection } = require('../../sql/connection-sql');
 const { deleteExtensionByGameId } = require('../extensions/extensions.utils');
 const { deleteVersionByGameId } = require('../versions/versions.utils');
 const { getBrandById } = require('../brands/brands.utils');
+const { getFamilybyId } = require('../families/families.utils');
 
 const getGames = async () => {
   try {
@@ -26,9 +27,7 @@ const getGame = async (id) => {
       `SELECT * FROM games WHERE id = ? AND deleted = false`, [id]
     );
     if (gamesRows.length) {
-      const [familiesRows] = await connection.query(
-        `SELECT * FROM families WHERE id = ?`, [gamesRows[0].family_id]
-      );
+      const [familiesRows] = await getFamilybyId(gamesRows[0].family_id);
       const brand = await getBrandById(gamesRows[0].brand_id);
       const [versionsRows] = await connection.query(
         `SELECT * FROM versions WHERE game_id = ? AND deleted = false`, [id]
