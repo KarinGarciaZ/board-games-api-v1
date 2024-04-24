@@ -1,16 +1,17 @@
 const { connection } = require('../../sql/connection-sql');
-const ExtensionsUtils = require('../extensions/extensions.utils');
-const VersionsUtils = require('../versions/versions.utils');
+const { getGamesByFamilyId } = require('../games/games.utils');
+const ExtensionsService = require('../extensions/extensions.service');
+const VersionsService = require('../versions/versions.service');
 
 const getFamilies = async () => {
   try {
     const [rows] = await connection.query(`SELECT * FROM families WHERE deleted = false`);
     const newFamilies = rows.map(async (row) => {
         const familyId = row.id;
-        const [gamesRows] = await connection.query(`SELECT * FROM games WHERE family_id = ? AND deleted = false`, [familyId]);
+        const games = await getGamesByFamilyId(familyId);
         return {
           ...row,
-          games: gamesRows
+          games
         }
     });
     const families = await Promise.all(newFamilies);
@@ -20,27 +21,22 @@ const getFamilies = async () => {
   }
 };
 
-const getFamilybyId = async (id) => {
-  const [rows] = await connection.query(`SELECT * FROM families WHERE id = ? AND deleted = false`, [id]);
-  return [rows];
-};
-
-const getFamily = async (id) => {
+const getFamily = async (familyId) => {
   try {
-    const [rows] = await getFamilybyId(id);
-    const [gamesRows] = await connection.query(`SELECT * FROM games WHERE family_id = ? AND deleted = false`, [id]);
+    const [rows] = await connection.query(`SELECT * FROM families WHERE id = ? AND deleted = false`, [familyId]);
+    const games = await getGamesByFamilyId(familyId);
     if (rows.length) {
       return {
         ...rows[0],
-        games: gamesRows
+        games
       };
     }
     return {};
   } catch (error) {
     throw error;
   }
-
 };
+
 const addFamily = async (body) => {
   try {
     const [row] = await connection.query(`INSERT INTO families SET ?`, [body]);
@@ -64,10 +60,10 @@ const deleteFamily = async (id) => {
   try {
     await newConnection.beginTransaction();
     await newConnection.query(`UPDATE families SET deleted = true WHERE id = ?`, [id]);
-    const [gamesRows] = await newConnection.query(`SELECT id FROM games WHERE family_id = ? AND deleted = false`, [id]);
-    for (const game of gamesRows) {
-      await VersionsUtils.deleteVersionByGameId(game.id, newConnection);
-      await ExtensionsUtils.deleteExtensionByGameId(game.id, newConnection);
+    const games = await getGamesByFamilyId(id);
+    for (const game of games) {
+      await VersionsService.deleteVersionByGameId(game.id, newConnection);
+      await ExtensionsService.deleteExtensionByGameId(game.id, newConnection);
     };
     await newConnection.query(`UPDATE games SET deleted = true WHERE family_id = ?`, [id]);
     await newConnection.commit();
@@ -83,5 +79,5 @@ module.exports = {
   getFamily,
   updateFamily,
   addFamily,
-  deleteFamily,
+  deleteFamily
 }
