@@ -6,8 +6,10 @@ const router = express.Router();
 
 router.post('/', upload.array('file'), async (req, res) => {
   try {
-    const body = {...req.body, id: null};
-    await Versions.createVersion(body);
+    const body = JSON.parse(req.body.gameInfo);
+    body.id = null;
+    
+    await Versions.createVersion(body, req.files);
     res.status(201).send('OK');
   } catch (error) {
     res.status(500).send(error);

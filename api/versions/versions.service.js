@@ -1,4 +1,5 @@
 const { connection } = require('../../sql/connection-sql');
+const {saveFile} = require('../files/files.utils');
 
 const getVersionsByGameId = async (gameId) => {
   try {
@@ -11,11 +12,28 @@ const getVersionsByGameId = async (gameId) => {
   }
 };
 
-const createVersion = async (version) => {
+const createVersion = async (version, files) => {
+  const newConnection = await connection.getConnection();
   try {
-    await connection.query('INSERT INTO versions SET ?', [version]);
+    await newConnection.beginTransaction();
+    const [createdVersion] = await newConnection.query('INSERT INTO versions SET ?', [version]);
+    if (files.length) {
+      const filesIds = await Promise.all(files.map(async (file, index) => {
+        const id = await saveFile(file, index, newConnection);
+        return id;
+      }));
+
+      const fileVersion = { version_id: createdVersion.insertId };
+
+      for (const fileId of filesIds) {
+        fileVersion.file_id = fileId;
+        await newConnection.query('INSERT INTO version_files SET ?', [fileVersion]);
+      }
+    }
+    await newConnection.commit();
     return;
   } catch (error) {
+    await newConnection.rollback();
     throw error;
   }
 };
