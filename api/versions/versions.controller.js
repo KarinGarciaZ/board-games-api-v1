@@ -1,9 +1,10 @@
 const express = require('express');
 const Versions = require('./versions.service');
+const { upload } = require('../../middlewares/multer');
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/', upload.array('file'), async (req, res) => {
   try {
     const body = {...req.body, id: null};
     await Versions.createVersion(body);
