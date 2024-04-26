@@ -2,7 +2,7 @@ const saveFile = async (file, index, conn) => {
   try {
     const fileToSave = {
       name: file.filename,
-      url: `/Users/oscargarcia/Documents/estudio-node/games-api-v1/${file.path}`,
+      url: `${process.env.FILES_BASE_URL}${file.path}`,
       size: file.size,
       type: file.mimetype,
       is_main: !index 
