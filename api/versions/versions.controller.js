@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/', upload.array('file'), async (req, res) => {
   try {
-    const body = JSON.parse(req.body.gameInfo);
+    const body = JSON.parse(req.body.versionData);
     body.id = null;
     
     await Versions.createVersion(body, req.files);
@@ -16,11 +16,12 @@ router.post('/', upload.array('file'), async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.array('file'), async (req, res) => {
   try {
-    const {id, ...body} = req.body;
+    const versionData = JSON.parse(req.body.versionData);
+    const {id, imagesToDelete, mainImage, ...body} = versionData;
     const versionId = req.params.id;
-    await Versions.updateVersion(versionId, body);
+    await Versions.updateVersion(versionId, body, req.files, imagesToDelete, mainImage);
     res.status(201).send('OK');
   } catch (error) {
     res.status(500).send(error);

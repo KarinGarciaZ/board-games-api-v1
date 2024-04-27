@@ -1,4 +1,4 @@
-const saveFile = async (file, index, conn) => {
+const saveFile = async (file, conn, index = 1) => {
   try {
     const fileToSave = {
       name: file.filename,
@@ -14,4 +14,22 @@ const saveFile = async (file, index, conn) => {
   }
 };
 
-module.exports = { saveFile };
+const deleteFile = async (fileId, conn) => {
+  try {
+    await conn.query('UPDATE files SET deleted = true WHERE id = ?', [fileId]);
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateFileMainColumn = async (value, fileId, conn) => {
+  try {
+    await conn.query('UPDATE files SET is_main = ? WHERE id = ?', [value, fileId]);
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { saveFile, updateFileMainColumn, deleteFile };

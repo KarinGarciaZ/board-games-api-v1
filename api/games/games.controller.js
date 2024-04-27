@@ -1,7 +1,7 @@
 const express = require('express');
 const Games = require('./games.service');
 const Extensions = require('../extensions/extensions.service');
-const Versions = require('../versions/versions.service');
+const Versions = require('../versions/versions.utils');
 
 const router = express.Router();
 
