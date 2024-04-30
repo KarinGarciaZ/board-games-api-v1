@@ -1,6 +1,5 @@
 const extensionsMock = [
   {
-    id: null,
     game_id: 6,
     version_id: null,
     name: 'Ampliacion 5-6 jugadores',
@@ -10,10 +9,8 @@ const extensionsMock = [
     rating: 0.0,
     rating_voters: 0,
     extra_rules: true,
-    deleted: false
   },
   {
-    id: null,
     game_id: 6,
     version_id: null,
     name: 'Navegantes',
@@ -23,10 +20,8 @@ const extensionsMock = [
     rating: 0.0,
     rating_voters: 0,
     extra_rules: true,
-    deleted: false
   },
   {
-    id: null,
     game_id: 14,
     version_id: null,
     name: 'Streaking kittens',
@@ -36,10 +31,8 @@ const extensionsMock = [
     rating: 0.0,
     rating_voters: 0,
     extra_rules: false,
-    deleted: false
   },
   {
-    id: null,
     game_id: 11,
     version_id: null,
     name: 'Unicorns of legend',
@@ -49,10 +42,8 @@ const extensionsMock = [
     rating: 0.0,
     rating_voters: 0,
     extra_rules: false,
-    deleted: false
   },
   {
-    id: null,
     game_id: 3,
     version_id: null,
     name: 'Dixit quest',
@@ -62,7 +53,6 @@ const extensionsMock = [
     rating: 0.0,
     rating_voters: 0,
     extra_rules: false,
-    deleted: false
   },
 ];
 

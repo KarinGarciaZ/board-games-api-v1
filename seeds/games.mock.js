@@ -1,6 +1,5 @@
 const gamesMock = [
   {
-    id: null,
     family_id: 1,
     brand_id: 1,
     name: 'Sequence',
@@ -11,10 +10,8 @@ const gamesMock = [
     max_players: 12,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 2,
     brand_id: 9,
     name: 'UNO',
@@ -25,10 +22,8 @@ const gamesMock = [
     max_players: 10,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 3,
     brand_id: 2,
     name: 'Dixit',
@@ -39,10 +34,8 @@ const gamesMock = [
     max_players: 6,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 4,
     brand_id: 2,
     name: 'Splendor',
@@ -53,10 +46,8 @@ const gamesMock = [
     max_players: 4,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 5,
     brand_id: 6,
     name: 'Mapominoes',
@@ -67,10 +58,8 @@ const gamesMock = [
     max_players: 5,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 6,
     brand_id: 5,
     name: 'Catan',
@@ -81,10 +70,8 @@ const gamesMock = [
     max_players: 4,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 12,
     brand_id: 9,
     name: 'Phase 10',
@@ -95,10 +82,8 @@ const gamesMock = [
     max_players: 6,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 2,
     brand_id: 9,
     name: 'DOS',
@@ -109,10 +94,8 @@ const gamesMock = [
     max_players: 4,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 2,
     brand_id: 9,
     name: 'UNO dare',
@@ -123,10 +106,8 @@ const gamesMock = [
     max_players: 10,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 1,
     brand_id: 2,
     name: 'Sequence for kids',
@@ -137,10 +118,8 @@ const gamesMock = [
     max_players: 4,
     rating: 0.0,
     rating_voters: 0,
-    deleted: false
   },
   {
-    id: null,
     family_id: 7,
     brand_id: 4,
     name: 'Unstable Unicorns',
@@ -151,10 +130,8 @@ const gamesMock = [
     max_players: 8,
     rating: 3.9,
     rating_voters: 52,
-    deleted: false
   },
   {
-    id: null,
     family_id: 8,
     brand_id: 4,
     name: 'Happy Little Dinosaurs',
@@ -165,10 +142,8 @@ const gamesMock = [
     max_players: 4,
     rating: 4.2,
     rating_voters: 27,
-    deleted: false
   },
   {
-    id: null,
     family_id: 9,
     brand_id: 7,
     name: 'Ticket to Ride',
@@ -179,10 +154,8 @@ const gamesMock = [
     max_players: 5,
     rating: 4.1,
     rating_voters: 87,
-    deleted: false
   },
   {
-    id: null,
     family_id: 10,
     brand_id: 8,
     name: 'Exploding Kittens',
@@ -193,10 +166,8 @@ const gamesMock = [
     max_players: 5,
     rating: 4.7,
     rating_voters: 74,
-    deleted: false
   },
   {
-    id: null,
     family_id: 11,
     brand_id: 2,
     name: 'Spot it',
@@ -207,10 +178,8 @@ const gamesMock = [
     max_players: 8,
     rating: 4.3,
     rating_voters: 98,
-    deleted: false
   },
   {
-    id: null,
     family_id: 6,
     brand_id: 5,
     name: 'Struggle For Catan',
@@ -221,10 +190,8 @@ const gamesMock = [
     max_players: 4,
     rating: 4.7,
     rating_voters: 128,
-    deleted: false
   },
   {
-    id: null,
     family_id: 6,
     brand_id: 5,
     name: 'Catan Junior',
@@ -235,10 +202,8 @@ const gamesMock = [
     max_players: 4,
     rating: 4.3,
     rating_voters: 18,
-    deleted: false
   },
   {
-    id: null,
     family_id: 6,
     brand_id: 5,
     name: 'Catan StarFarers',
@@ -249,10 +214,8 @@ const gamesMock = [
     max_players: 4,
     rating: 3.7,
     rating_voters: 20,
-    deleted: false
   },
   {
-    id: null,
     family_id: 6,
     brand_id: 5,
     name: 'Catan Dice Game',
@@ -263,10 +226,8 @@ const gamesMock = [
     max_players: 4,
     rating: 3.6,
     rating_voters: 26,
-    deleted: false
   },
   {
-    id: null,
     family_id: 6,
     brand_id: 5,
     name: 'Catan Logic Puzzle',
@@ -277,7 +238,6 @@ const gamesMock = [
     max_players: 1,
     rating: 3.9,
     rating_voters: 54,
-    deleted: false
   },
 ];
 
