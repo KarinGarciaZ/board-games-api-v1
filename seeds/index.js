@@ -1,5 +1,9 @@
 const { sequelize } = require('../sql/sequelize-connection');
 const Family = require('../sql/models/family');
+const Brand = require('../sql/models/brand');
+const Game = require('../sql/models/game');
+const Extension = require('../sql/models/extension');
+const Version = require('../sql/models/version');
 const { brandsMock } = require('./brands.mock');
 const { extensionsMock } = require('./extensions');
 const { familiesMock } = require('./families.mock');
@@ -11,6 +15,10 @@ const seedDatabase = async () => {
   try {
       // Insert seed data into the families table
       await Family.bulkCreate(familiesMock, { transaction: t });
+      await Brand.bulkCreate(brandsMock, { transaction: t });
+      await Game.bulkCreate(gamesMock, {transaction: t});
+      await Extension.bulkCreate(extensionsMock, {transaction: t});
+      await Version.bulkCreate(versionsMock, {transaction: t});
 
       // for (const brand of brandsMock) {
       //   await newConnection.query(
