@@ -1,7 +1,7 @@
 const express = require('express');
 const Games = require('./games.service');
-const Extensions = require('../extensions/extensions.service');
 const Versions = require('../versions/versions.utils');
+const { getExtensionsByGameId } = require('../extensions/extensions.utils');
 
 const router = express.Router();
 
@@ -27,7 +27,7 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/extensions', async (req, res) => {
   try {
     const id = req.params.id;
-    const extensions = await Extensions.getExtensionsByGameId(id);
+    const extensions = await getExtensionsByGameId(id);
     res.status(200).json(extensions);
   } catch (error) {
     res.status(500).json(error);

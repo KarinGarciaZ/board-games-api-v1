@@ -1,3 +1,13 @@
+
+const getExtensionsByGameId = async (id) => {
+  try {
+    const [rows] = await connection.query(`SELECT * FROM extensions WHERE game_id = ? AND deleted = false`, [id]);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const deleteExtensionByGameId = async (gameId, conn) => {
   try {
     await conn.query(`UPDATE extensions SET deleted = true WHERE game_id = ?`, [gameId]);
@@ -7,6 +17,17 @@ const deleteExtensionByGameId = async (gameId, conn) => {
   }
 };
 
+const getExtensionFilesByExtensionId = async (extensionId, conn) => {
+  try {
+    const [extensionFiles] = await conn.query(`SELECT * FROM extension_files WHERE extension_id = ?`, [extensionId]);
+    return extensionFiles
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
-  deleteExtensionByGameId
+  deleteExtensionByGameId,
+  getExtensionsByGameId,
+  getExtensionFilesByExtensionId
 }
