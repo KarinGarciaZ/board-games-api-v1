@@ -13,36 +13,12 @@ const { versionsMock } = require('./versions.mock');
 const seedDatabase = async () => {
   const t = await sequelize.transaction();
   try {
-      // Insert seed data into the families table
+      // Insert seed data into the tables
       await Family.bulkCreate(familiesMock, { transaction: t });
       await Brand.bulkCreate(brandsMock, { transaction: t });
       await Game.bulkCreate(gamesMock, {transaction: t});
       await Extension.bulkCreate(extensionsMock, {transaction: t});
       await Version.bulkCreate(versionsMock, {transaction: t});
-
-      // for (const brand of brandsMock) {
-      //   await newConnection.query(
-      //     'INSERT INTO brands SET ?', [brand]
-      //   );
-      // }
-
-      // for (const game of gamesMock) {
-      //   await newConnection.query(
-      //     'INSERT INTO games SET ?', [game]
-      //   );
-      // }
-
-      // for (const version of versionsMock) {
-      //   await newConnection.query(
-      //     'INSERT INTO versions SET ?', [version]
-      //   );
-      // }
-
-      // for (const extension of extensionsMock) {
-      //   await newConnection.query(
-      //     'INSERT INTO extensions SET ?', [extension]
-      //   );
-      // }
 
       await t.commit();
 
