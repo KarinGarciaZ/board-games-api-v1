@@ -1,6 +1,8 @@
 const { connection } = require('../../sql/connection-sql');
 const { saveFile, deleteFile, updateFileMainColumn } = require('../files/files.utils');
 const { getExtensionFilesByExtensionId } = require('./extensions.utils');
+const Extension = require('../../sql/models/extension');
+const ExtensionFiles = require('../../sql/models/extensionFiles');
 
 const getExtension = async (id) => {
   try {

@@ -3,6 +3,8 @@ const { deleteExtensionByGameId } = require('../extensions/extensions.utils');
 const { deleteVersionByGameId } = require('../versions/versions.utils');
 const { getBrandById } = require('../brands/brands.utils');
 const { getFamilybyId } = require('../families/families.utils');
+const Game = require('../../sql/models/game');
+const GameFiles = require('../../sql/models/gameFiles');
 
 const getGames = async () => {
   try {
