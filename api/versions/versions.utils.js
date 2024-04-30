@@ -41,7 +41,7 @@ const getVersionsFilesByVersionId = async (versionId, conn) => {
     'SELECT * from version_files WHERE version_id = ?',[versionId]
   );
   return filesVersions;
-}
+};
 
 module.exports = {
   deleteVersionByGameId,

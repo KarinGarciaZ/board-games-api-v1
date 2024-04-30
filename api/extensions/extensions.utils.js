@@ -19,7 +19,7 @@ const deleteExtensionByGameId = async (gameId, conn) => {
 
 const getExtensionFilesByExtensionId = async (extensionId, conn) => {
   try {
-    const [extensionFiles] = await conn.query(`SELECT * FROM extension_files WHERE extension_id = ?`, [extensionId]);
+    const [extensionFiles] = await conn.query(`SELECT * FROM extensions_files WHERE extensions_id = ?`, [extensionId]);
     return extensionFiles
   } catch (error) {
     throw error;

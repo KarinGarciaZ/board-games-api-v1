@@ -58,24 +58,21 @@ const updateExtension = async (id, extension, imagesToDelete, mainImage, files) 
     let firstNewFileId;
     if (files.length) {
       const filesIds = await Promise.all(files.map(async (file, index) => {
-        const id = await saveFile(file, index, newConnection);
+        const id = await saveFile(file, newConnection, index);
         return id;
       }));
-
-      const extensionFile = { extension_id: id }
+      const extensionFile = { extensions_id: id }
       for (const fileId of filesIds) {
-        extensionFile.file_id = fileId
+        extensionFile.file_id = fileId;
         await newConnection.query(`INSERT INTO extensions_files SET ?`, [extensionFile]);
       }
       firstNewFileId = filesIds[0];
     };
-
     const extensionFiles = await getExtensionFilesByExtensionId(id, newConnection);
 
     for (const extensionFile of extensionFiles) {
       updateFileMainColumn(false, extensionFile.file_id, newConnection);
     };
-
     if  (mainImage) {
       await updateFileMainColumn(true, mainImage, newConnection);
     }  else {
