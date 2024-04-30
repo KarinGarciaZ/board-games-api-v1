@@ -22,7 +22,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   try {
     await new Promise(resolve => {
       setTimeout(async () => {
-        await sequelize.sync({force: true});
+        await sequelize.sync(/*{force: true}*/);
         resolve('');
       }, 1000);
     });

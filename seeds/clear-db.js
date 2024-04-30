@@ -1,24 +1,22 @@
-const { connection } = require('../sql/connection-sql');
+const { sequelize } = require('../sql/sequelize-connection');
+const Family = require('../sql/models/family');
 
 const seedDatabase = async () => {
-  const newConnection = await connection.getConnection();
+  const t = await sequelize.transaction();
   try {
-    await newConnection.beginTransaction();
-    await newConnection.query('TRUNCATE TABLE families');
-    await newConnection.query('TRUNCATE TABLE brands');
-    await newConnection.query('TRUNCATE TABLE games');
-    await newConnection.query('TRUNCATE TABLE versions');
-    await newConnection.query('TRUNCATE TABLE extensions');
+    await Family.destroy({ truncate: { cascade: true }, transaction: t });
+    // await newConnection.query('TRUNCATE TABLE brands');
+    // await newConnection.query('TRUNCATE TABLE games');
+    // await newConnection.query('TRUNCATE TABLE versions');
+    // await newConnection.query('TRUNCATE TABLE extensions');
 
-    await newConnection.commit();
+    await t.commit();
 
     console.log('Data deleted successfully!');
   } catch (error) {
-      await newConnection.rollback();
-      console.error('Error deleting tables into database:', error);
+    await t.rollback();
+    console.error('Error deleting tables into database:', error);
   }
-  // Close the database connection
-  await newConnection.end();
 }
 
 // Call the function to seed the database
