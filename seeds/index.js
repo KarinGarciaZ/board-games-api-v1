@@ -4,11 +4,13 @@ const Brand = require('../sql/models/brand');
 const Game = require('../sql/models/game');
 const Extension = require('../sql/models/extension');
 const Version = require('../sql/models/version');
+const File = require('../sql/models/file');
 const { brandsMock } = require('./brands.mock');
 const { extensionsMock } = require('./extensions');
 const { familiesMock } = require('./families.mock');
 const { gamesMock } = require('./games.mock');
 const { versionsMock } = require('./versions.mock');
+const { filesMock } = require('./files.mock');
 
 const seedDatabase = async () => {
   const t = await sequelize.transaction();
@@ -19,6 +21,7 @@ const seedDatabase = async () => {
       await Game.bulkCreate(gamesMock, {transaction: t});
       await Extension.bulkCreate(extensionsMock, {transaction: t});
       await Version.bulkCreate(versionsMock, {transaction: t});
+      await File.bulkCreate(filesMock, {transaction: t});
 
       await t.commit();
 
