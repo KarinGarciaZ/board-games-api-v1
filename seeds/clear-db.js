@@ -1,4 +1,3 @@
-const { sequelize } = require('../sql/sequelize-connection');
 const Family = require('../sql/models/family');
 const Brand = require('../sql/models/brand');
 const Game = require('../sql/models/game');
@@ -10,22 +9,19 @@ const VersionFiles = require('../sql/models/versionFiles');
 const ExtensionFiles = require('../sql/models/extensionFiles');
 
 const seedDatabase = async () => {
-  const t = await sequelize.transaction();
   try {
-    await Family.destroy({ truncate: { cascade: true }, transaction: t });
-    await Brand.destroy({ truncate: { cascade: true }, transaction: t });
-    await Game.destroy({ truncate: { cascade: true }, transaction: t });
-    await Version.destroy({ truncate: { cascade: true }, transaction: t });
-    await Extension.destroy({ truncate: { cascade: true }, transaction: t });
-    await File.destroy({ truncate: { cascade: true }, transaction: t });
-    await GameFiles.destroy({ truncate: true, transaction: t });
-    await VersionFiles.destroy({ truncate: true, transaction: t });
-    await ExtensionFiles.destroy({ truncate: true, transaction: t });
+    await Family.sync({ force: true });
+    await Brand.sync({ force: true });
+    await Game.sync({ force: true });
+    await Version.sync({ force: true });
+    await Extension.sync({ force: true });
+    await File.sync({ force: true });
+    await GameFiles.sync({ force: true });
+    await VersionFiles.sync({ force: true });
+    await ExtensionFiles.sync({ force: true });
 
-    await t.commit();
     console.log('Data deleted successfully!');
   } catch (error) {
-    await t.rollback();
     console.error('Error deleting tables into database:', error);
   }
 }
