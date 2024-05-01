@@ -7,6 +7,7 @@ const Version = require('../sql/models/version');
 const File = require('../sql/models/file');
 const ExtensionFiles = require('../sql/models/extensionFiles');
 const VersionFiles = require('../sql/models/versionFiles');
+const GameFiles = require('../sql/models/gameFiles');
 const { brandsMock } = require('./brands.mock');
 const { extensionsMock } = require('./extensions.mock');
 const { familiesMock } = require('./families.mock');
@@ -15,6 +16,7 @@ const { versionsMock } = require('./versions.mock');
 const { filesMock } = require('./files.mock');
 const { extensionFilesMock } = require('./extensionFiles.mock');
 const { versionFilesMock } = require('./versionFiles.mock');
+const { gameFilesMock } = require('./gameFiles.mock');
 
 const seedDatabase = async () => {
   const t = await sequelize.transaction();
@@ -28,6 +30,7 @@ const seedDatabase = async () => {
       await File.bulkCreate(filesMock, {transaction: t});
       await ExtensionFiles.bulkCreate(extensionFilesMock, {transaction: t});
       await VersionFiles.bulkCreate(versionFilesMock, {transaction: t});
+      await GameFiles.bulkCreate(gameFilesMock, {transaction: t});
 
       await t.commit();
 

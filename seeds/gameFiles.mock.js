@@ -1,4 +1,4 @@
-const GameFilesMock = [
+const gameFilesMock = [
   { gameId: 1, fileId: 1 },
   { gameId: 1, fileId: 2 },
   { gameId: 1, fileId: 3 },
@@ -19,7 +19,6 @@ const GameFilesMock = [
   { gameId: 12, fileId: 13 },
   { gameId: 12, fileId: 14 },
   { gameId: 13, fileId: 15 },
-  { gameId: 13, fileId: 15 },
   { gameId: 14, fileId: 16 },
   { gameId: 15, fileId: 17 },
   { gameId: 15, fileId: 18 },
@@ -29,3 +28,7 @@ const GameFilesMock = [
   { gameId: 19, fileId: 11 },
   { gameId: 20, fileId: 11 },
 ];
+
+module.exports = {
+  gameFilesMock
+}
