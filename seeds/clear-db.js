@@ -1,28 +1,27 @@
-const Family = require('../sql/models/family');
-const Brand = require('../sql/models/brand');
-const Game = require('../sql/models/game');
-const Version = require('../sql/models/version');
-const Extension = require('../sql/models/extension');
-const File = require('../sql/models/file');
-const GameFiles = require('../sql/models/gameFiles');
-const VersionFiles = require('../sql/models/versionFiles');
-const ExtensionFiles = require('../sql/models/extensionFiles');
+const { connection } = require('../sql/connection-sql');
 
 const seedDatabase = async () => {
+  const newConnection = await connection.getConnection();
   try {
-    await Family.sync({ force: true });
-    await Brand.sync({ force: true });
-    await Game.sync({ force: true });
-    await Version.sync({ force: true });
-    await Extension.sync({ force: true });
-    await File.sync({ force: true });
-    await GameFiles.sync({ force: true });
-    await VersionFiles.sync({ force: true });
-    await ExtensionFiles.sync({ force: true });
+    await newConnection.beginTransaction();
+    await newConnection.query('SET FOREIGN_KEY_CHECKS = 0');
+    await newConnection.query('TRUNCATE TABLE families');
+    await newConnection.query('TRUNCATE TABLE brands');
+    await newConnection.query('TRUNCATE TABLE games');
+    await newConnection.query('TRUNCATE TABLE versions');
+    await newConnection.query('TRUNCATE TABLE extensions');
+    await newConnection.query('TRUNCATE TABLE files');
+    await newConnection.query('TRUNCATE TABLE gameFiles');
+    await newConnection.query('TRUNCATE TABLE versionFiles');
+    await newConnection.query('TRUNCATE TABLE extensionFiles');
+    await newConnection.query('SET FOREIGN_KEY_CHECKS = 1');
+
+    await newConnection.commit();
 
     console.log('Data deleted successfully!');
   } catch (error) {
-    console.error('Error deleting tables into database:', error);
+      await newConnection.rollback();
+      console.error('Error deleting tables into database:', error);
   }
 }
 
