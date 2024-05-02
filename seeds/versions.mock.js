@@ -1,23 +1,27 @@
 const versionsMock = [
   {
-    game_id: 2,
+    gameId: 2,
     name: 'BTS'
   },
   {
-    game_id: 2,
+    gameId: 2,
     name: 'Harry Potter'
   },
   {
-    game_id: 5,
+    gameId: 5,
     name: 'Africa'
   },
   {
-    game_id: 11,
+    gameId: 11,
     name: 'NSFW'
   },
   {
-    game_id: 14,
+    gameId: 14,
     name: 'NSFW'
+  },
+  {
+    gameId: 6,
+    name: 'Catan de viaje'
   }
 ];
 

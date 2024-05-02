@@ -1,3 +1,4 @@
+const Extension = require("../../sql/models/extension");
 
 const getExtensionsByGameId = async (id) => {
   try {
@@ -10,7 +11,16 @@ const getExtensionsByGameId = async (id) => {
 
 const deleteExtensionByGameId = async (gameId, conn) => {
   try {
-    await conn.query(`UPDATE extensions SET deleted = true WHERE game_id = ?`, [gameId]);
+    await Extension.update(
+      { deleted: true },
+      {
+        where: {
+          gameId
+        },
+        transaction: conn
+      }
+    )
+    // await conn.query(`UPDATE extensions SET deleted = true WHERE game_id = ?`, [gameId]);
     return;
   } catch (error){
     throw error;

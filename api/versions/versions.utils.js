@@ -1,8 +1,18 @@
 const { connection } = require('../../sql/connection-sql');
+const Version = require('../../sql/models/version');
 
 const deleteVersionByGameId = async (gameId, conn) => {
   try {
-    await conn.query(`UPDATE versions SET deleted = true WHERE game_id = ?`, [gameId]);
+    await Version.update(
+      { deleted: true },
+      {
+        where: {
+          gameId
+        },
+        transaction: conn
+      }
+    )
+    // await conn.query(`UPDATE versions SET deleted = true WHERE game_id = ?`, [gameId]);
     return;
   } catch (error){
     throw error;
