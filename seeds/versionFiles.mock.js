@@ -6,6 +6,8 @@ const versionFilesMock = [
   { versionId: 3, fileId: 10 },
   { versionId: 4, fileId: 12 },
   { versionId: 5, fileId: 16 },
+  { versionId: 6, fileId: 1 },
+  { versionId: 6, fileId: 2 },
 ];
 
 module.exports = {

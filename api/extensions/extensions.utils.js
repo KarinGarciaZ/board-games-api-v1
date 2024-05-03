@@ -1,4 +1,5 @@
 const Extension = require("../../sql/models/extension");
+const File = require("../../sql/models/file");
 
 const getExtensionsByGameId = async (id) => {
   try {
@@ -9,18 +10,41 @@ const getExtensionsByGameId = async (id) => {
   }
 };
 
-const deleteExtensionByGameId = async (gameId, conn) => {
+const deleteExtensionByGameId = async (gameId, t) => {
   try {
+    const extensions = await Extension.findAll({
+      where: { gameId },
+      include: [
+        {
+          model: File,
+        }
+      ]
+    });
+
+    let files = [];
+    extensions.forEach(ext => {
+      files = [...files, ...ext.files];
+    });
+    const fileIds = files.map(file => file.id);
+
     await Extension.update(
       { deleted: true },
       {
         where: {
           gameId
         },
-        transaction: conn
+        transaction: t
       }
-    )
-    // await conn.query(`UPDATE extensions SET deleted = true WHERE game_id = ?`, [gameId]);
+    );
+    await File.update(
+      { deleted: true },
+      {
+        where: {
+          id: [...fileIds]
+        },
+        transaction: t
+      }
+    );
     return;
   } catch (error){
     throw error;

@@ -1,8 +1,8 @@
 const { getGamesByFamilyId } = require('../games/games.utils');
 const { deleteExtensionByGameId } = require('../extensions/extensions.utils');
-const { deleteVersionByGameId } = require('../versions/versions.utils');
-const Family = require('../../sql/models/family');
+const { deleteVersionsByGameId } = require('../versions/versions.utils');
 const { sequelize } = require('../../sql/sequelize-connection');
+const Family = require('../../sql/models/family');
 const Game = require('../../sql/models/game');
 
 const getFamilies = async () => {
@@ -93,7 +93,7 @@ const deleteFamily = async (id) => {
     )
     const games = await getGamesByFamilyId(id);
     for (const game of games) {
-      await deleteVersionByGameId(game.id, t);
+      await deleteVersionsByGameId(game.id, t);
       await deleteExtensionByGameId(game.id, t);
     };
     await t.commit();
