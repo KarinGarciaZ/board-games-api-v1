@@ -1,25 +1,27 @@
-const { connection } = require('../../sql/connection-sql');
-const { deleteExtensionByGameId } = require('../extensions/extensions.utils');
-const { deleteVersionByGameId } = require('../versions/versions.utils');
+const { deleteExtensionsByGameId } = require('../extensions/extensions.utils');
+const { deleteVersionsByGameId } = require('../versions/versions.utils');
 const { getGamesByBrandId } = require('../games/games.utils');
-const { getBrandById } = require('./brands.utils');
 const Brand = require('../../sql/models/brand');
+const Game = require('../../sql/models/game');
+const { sequelize } = require('../../sql/sequelize-connection');
 
 const getBrands = async () => {
 	try {
-		const [brands] = await connection.query(
-			`SELECT * FROM brands WHERE deleted = false`
-		);
-
-		const brandsPromises = brands.map(async brand => {
-			const games = await getGamesByBrandId(brand.id);
-			return { ...brand, games };
+		const brands = await Brand.findAll({
+			where: {
+				deleted: false
+			},
+			include: [
+				{
+					model: Game,
+					where: {
+						deleted: false
+					},
+					required: false,
+				},
+			]
 		});
-		if (brandsPromises.length) {
-			const brandsToReturn = await Promise.all(brandsPromises);
-			return brandsToReturn;
-		}
-		return [];
+		return brands;
 	} catch (error) {
 		throw error;
 	}
@@ -27,50 +29,77 @@ const getBrands = async () => {
 
 const getBrand = async (brandId) => {
 	try {
-		const brand = await getBrandById(brandId);
-		const games = await getGamesByBrandId(brandId);
-		if (brand) {
-			return {...brand, games};
-		}
-		return {};
+		const brand = await Brand.findOne({
+			where: {
+				id: brandId,
+				deleted: false
+			},
+			include: {
+				model: Game,
+				where: {
+					deleted: false
+				},
+				required: false,
+			}
+		});
+		return brand ? brand : {};
 	} catch (error) {
 		throw error;
 	}
 };
 
-const addBrand = async (body) => {
+const addBrand = async (brand) => {
 	try {
-		await connection.query(`INSERT INTO brands SET ?`, [body]);
+		await Brand.create(brand);
 		return;
 	} catch (error) {
 		throw error;
 	}
 };
 
-const updateBrand = async (id, body) => {
+const updateBrand = async (brandId, brand) => {
 	try {
-		await connection.query(`UPDATE brands SET ? WHERE id = ?`, [body, id]);
+		await Brand.update(brand, {
+			where: {
+				id: brandId
+			}
+		})
 		return;
 	} catch (error) {
 		throw error;
 	}
 }
 
-const deleteBrand = async (id) => {
-	const sqlConnection = await connection.getConnection();
+const deleteBrand = async (brandId) => {
+	const t = await sequelize.transaction();
 	try {
-		await sqlConnection.beginTransaction();
-		await sqlConnection.query(`UPDATE brands SET deleted = true WHERE id = ?`, [id]);
-		const games = await getGamesByBrandId(id);
-		await sqlConnection.query(`UPDATE games SET deleted = true WHERE brand_id = ?`, [id]);
+		await Brand.update(
+			{ deleted: true },
+			{
+				where: {
+					id: brandId
+				},
+				transaction: t
+			}
+		);
+		const games = await getGamesByBrandId(brandId);
 		for (const game of games) {
-			await deleteVersionByGameId(game.id, sqlConnection);
-			await deleteExtensionByGameId(game.id, sqlConnection);
-		}
-		await sqlConnection.commit();
+			await deleteVersionsByGameId(game.id, t);
+			await deleteExtensionsByGameId(game.id, t);
+		};
+		await Game.update(
+			{ deleted: true },
+			{
+				where: {
+					brandId
+				},
+				transaction: t
+			}
+		);
+		await t.commit();
 		return;
 	} catch (error) {
-		await sqlConnection.rollback();
+		await t.rollback();
 		throw error;
 	}
 };

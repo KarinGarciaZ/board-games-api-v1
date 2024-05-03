@@ -109,7 +109,7 @@ const gamesMock = [
   },
   {
     familyId: 1,
-    brandId: 2,
+    brandId: 1,
     name: 'Sequence for kids',
     description: 'Juega una carta de animal de tu mano, coloca una ficha en el tablero… cuando consigas 4 en fila, ¡es SEQUENCE',
     age_recommended: 3,
