@@ -1,6 +1,6 @@
 const { connection } = require('../../sql/connection-sql');
-const { deleteExtensionByGameId } = require('../extensions/extensions.utils');
-const { deleteVersionByGameId } = require('../versions/versions.utils');
+const { deleteExtensionsByGameId } = require('../extensions/extensions.utils');
+const { deleteVersionsByGameId } = require('../versions/versions.utils');
 const { getBrandById } = require('../brands/brands.utils');
 const { getFamilybyId } = require('../families/families.utils');
 const Game = require('../../sql/models/game');
@@ -76,8 +76,8 @@ const deleteGame = async (id) => {
   try {
     await newConnection.beginTransaction();
     await newConnection.query(`UPDATE games SET deleted = true WHERE id = ?`, [id]);
-    await deleteVersionByGameId(id, newConnection);
-    await deleteExtensionByGameId(id, newConnection);
+    await deleteVersionsByGameId(id, newConnection);
+    await deleteExtensionsByGameId(id, newConnection);
     await newConnection.commit();
     return;
   } catch (error) {

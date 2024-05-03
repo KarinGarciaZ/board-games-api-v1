@@ -10,7 +10,7 @@ const getExtensionsByGameId = async (id) => {
   }
 };
 
-const deleteExtensionByGameId = async (gameId, t) => {
+const deleteExtensionsByGameId = async (gameId, t) => {
   try {
     const extensions = await Extension.findAll({
       where: { gameId },
@@ -61,7 +61,7 @@ const getExtensionFilesByExtensionId = async (extensionId, conn) => {
 };
 
 module.exports = {
-  deleteExtensionByGameId,
+  deleteExtensionsByGameId,
   getExtensionsByGameId,
   getExtensionFilesByExtensionId
 }
