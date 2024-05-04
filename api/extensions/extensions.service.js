@@ -1,27 +1,23 @@
 const { connection } = require('../../sql/connection-sql');
 const { saveFile, deleteFile, updateFileMainColumn } = require('../files/files.utils');
 const { getExtensionFilesByExtensionId } = require('./extensions.utils');
-const Extension = require('../../sql/models/extension');
-const ExtensionFiles = require('../../sql/models/extensionFiles');
+const { File, Extension } = require('../../sql/models');
 
 const getExtension = async (id) => {
   try {
-    const [rows] = await connection.query(`SELECT * FROM extensions WHERE id = ? AND deleted = false`, [id]);
-    const [extensionFilesIds] = await connection.query(`SELECT file_id FROM extensions_files WHERE extension_id = ?`, [id]);
-    if(rows.length) {
-      let extensionFiles = [];
-      if (extensionFilesIds.length) {
-        extensionFiles = await Promise.all(extensionFilesIds.map(async (fileId) => {
-           const [file] = await connection.query(`SELECT * FROM files WHERE id = ? AND deleted = false`, [fileId.file_id]);
-          return { ...file[0] };
-        }));
-      };
-      return {
-        ...rows[0],
-        files: extensionFiles
-      };
-    }
-    return {};
+    const extension = await Extension.findOne({
+      where: {
+        id,
+        deleted: false
+      },
+      include: [
+        {
+          model: File,
+        }
+      ]
+    });
+
+    return extension ?? {};
   } catch (error) {
     throw error;
   }

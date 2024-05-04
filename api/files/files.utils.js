@@ -1,5 +1,3 @@
-const File = require('../../sql/models/file');
-
 const saveFile = async (file, conn, index = 1) => {
   try {
     const fileToSave = {
