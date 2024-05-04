@@ -73,9 +73,14 @@ const addGame = async (body, files) => {
   }
 };
 
-const updateGame = async (id, body) => {
+const updateGame = async (gameId, body, imagesToDelete, mainImage, files) => {
+  //format files to send
   try {
-
+    Game.update(body, {
+      where: {
+        id: gameId
+      }
+    });
     await connection.query(`UPDATE games SET ? WHERE id = ?`, [body, id]);
     return;
   } catch (error) {
