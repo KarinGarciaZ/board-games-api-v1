@@ -1,4 +1,4 @@
-const Game = require('../../sql/models/game');
+const { Game } = require('../../sql/models');
 
 const getGamesByFamilyId = async (familyId) => {
   try {

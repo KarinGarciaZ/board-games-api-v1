@@ -2,8 +2,7 @@ const { getGamesByFamilyId } = require('../games/games.utils');
 const { deleteExtensionsByGameId } = require('../extensions/extensions.utils');
 const { deleteVersionsByGameId } = require('../versions/versions.utils');
 const { sequelize } = require('../../sql/sequelize-connection');
-const Family = require('../../sql/models/family');
-const Game = require('../../sql/models/game');
+const { Family, Game } = require('../../sql/models');
 
 const getFamilies = async () => {
   try {

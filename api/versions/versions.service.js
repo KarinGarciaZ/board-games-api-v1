@@ -1,8 +1,6 @@
 const { connection } = require('../../sql/connection-sql');
 const { saveFile, updateFileMainColumn, deleteFile } = require('../files/files.utils');
 const { getVersionsFilesByVersionId } = require('./versions.utils');
-const Version = require('../../sql/models/version');
-const VersionFiles = require('../../sql/models/versionFiles');
 
 const createVersion = async (version, files) => {
   const newConnection = await connection.getConnection();

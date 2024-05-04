@@ -1,6 +1,5 @@
 const { connection } = require('../../sql/connection-sql');
-const Version = require('../../sql/models/version');
-const File = require("../../sql/models/file");
+const { File, Version } = require('../../sql/models');
 
 const deleteVersionsByGameId = async (gameId, t) => {
   try {
@@ -9,6 +8,8 @@ const deleteVersionsByGameId = async (gameId, t) => {
       include: [
         {
           model: File,
+          required: false,
+          where: { deleted: false }
         }
       ]
     });

@@ -1,5 +1,4 @@
-const Extension = require("../../sql/models/extension");
-const File = require("../../sql/models/file");
+const { File, Extension } = require('../../sql/models');
 
 const getExtensionsByGameId = async (id) => {
   try {

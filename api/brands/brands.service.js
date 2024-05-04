@@ -1,9 +1,8 @@
 const { deleteExtensionsByGameId } = require('../extensions/extensions.utils');
 const { deleteVersionsByGameId } = require('../versions/versions.utils');
 const { getGamesByBrandId } = require('../games/games.utils');
-const Brand = require('../../sql/models/brand');
-const Game = require('../../sql/models/game');
 const { sequelize } = require('../../sql/sequelize-connection');
+const { Game, Brand } = require('../../sql/models');
 
 const getBrands = async () => {
 	try {

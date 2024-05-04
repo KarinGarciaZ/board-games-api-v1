@@ -3,11 +3,7 @@ const { deleteExtensionsByGameId } = require('../extensions/extensions.utils');
 const { deleteVersionsByGameId } = require('../versions/versions.utils');
 const { getBrandById } = require('../brands/brands.utils');
 const { getFamilybyId } = require('../families/families.utils');
-const Game = require('../../sql/models/game');
-const Brand = require('../../sql/models/brand');
-const Family = require('../../sql/models/family');
-const Extension = require('../../sql/models/extension');
-const Version = require('../../sql/models/version');
+const {Game, Brand } = require('../../sql/models');
 const File = require("../../sql/models/file");
 
 const getGames = async () => {
