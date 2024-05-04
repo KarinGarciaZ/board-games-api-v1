@@ -2,6 +2,7 @@ const express = require('express');
 const Games = require('./games.service');
 const Versions = require('../versions/versions.utils');
 const { getExtensionsByGameId } = require('../extensions/extensions.utils');
+const { upload } = require('../../middlewares/multer');
 
 const router = express.Router();
 
@@ -44,22 +45,29 @@ router.get('/:id/versions', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
-    const body = req.body;
-    body.id = null;
+router.post('/', upload.array('file'), async (req, res) => {
+  const body = JSON.parse(req.body.data);
+  const files = req.files;
+  console.log(files);
     try {
-      await Games.addGame(body);
+      await Games.addGame(body, files);
       res.status(201).send();
     } catch (error) {
       res.status(500).json(error);
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.array('file'), async (req, res) => {
     const id = req.params.id;
-    const {id: bodyId, ...body} = req.body;
+    const body = JSON.parse(req.body.data);
+  const {id: bodyId, imagesToDelete, mainImage, ...game} = body
     try {
-      await Games.updateGame(id, body)
+      await Games.updateGame(id,
+        game,
+        imagesToDelete,
+        mainImage,
+        req.files
+      )
       res.status(201).send();
     } catch (error) {
       res.status(500).json(error);

@@ -4,58 +4,81 @@ const { deleteVersionsByGameId } = require('../versions/versions.utils');
 const { getBrandById } = require('../brands/brands.utils');
 const { getFamilybyId } = require('../families/families.utils');
 const Game = require('../../sql/models/game');
-const GameFiles = require('../../sql/models/gameFiles');
+const Brand = require('../../sql/models/brand');
+const Family = require('../../sql/models/family');
+const Extension = require('../../sql/models/extension');
+const Version = require('../../sql/models/version');
+const File = require("../../sql/models/file");
 
 const getGames = async () => {
   try {
-    const [gamesRows] = await connection.query(`SELECT * FROM games WHERE deleted = false`);
-    const games = gamesRows.map(async game => {
-      const brand = await getBrandById(game.brand_id);
-      return {
-        ...game,
-        brand
-      }
+    const games = await Game.findAll({
+      where: {
+        deleted: false
+      },
+      include: [
+        {
+          model: Brand,
+          where: {
+            deleted: false
+          },
+          required: false
+        }
+      ]
+    })
+    return games;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getGame = async (gameId) => {
+  try {
+    const game = await Game.findOne({
+      where: {
+        id: gameId,
+        deleted: false
+      },
+      include: [
+        {
+          all: true,
+          where: {
+            deleted: false,
+          },
+          required: false
+        }
+      ]
     });
-    const gamesToReturn = await Promise.all(games);
-    return gamesToReturn;
+    return game;
   } catch (error) {
     throw error;
   }
 };
 
-const getGame = async (id) => {
+const addGame = async (body, files) => {
+  const filesToSave = files.map((file, index) => {
+    return  {
+      name: file.filename,
+      url: `${process.env.FILES_BASE_URL}${file.path}`,
+      size: file.size,
+      type: file.mimetype,
+      is_main: !index
+    };
+  });
   try {
-    const [gamesRows] = await connection.query(
-      `SELECT * FROM games WHERE id = ? AND deleted = false`, [id]
-    );
-    if (gamesRows.length) {
-      const family = await getFamilybyId(gamesRows[0].family_id);
-      const brand = await getBrandById(gamesRows[0].brand_id);
-      const [versionsRows] = await connection.query(
-        `SELECT * FROM versions WHERE game_id = ? AND deleted = false`, [id]
-      );
-      const [extensionsRows] = await connection.query(
-        `SELECT * FROM extensions WHERE game_id = ? AND deleted = false`, [id]
-      );
-      //files
-
-      return {
-        ...gamesRows[0],
-        family,
-        brand,
-        versions: versionsRows,
-        extensions: extensionsRows
-      };
+    Game.create(
+    {
+      ...body,
+      files: [filesToSave]
+    },
+    {
+      include: [
+        {
+          association: File
+        }
+      ]
     }
-    return {};
-  } catch (error) {
-    throw error;
-  }
-};
-
-const addGame = async (body) => {
-  try {
-    await connection.query(`INSERT INTO games SET ?`, [body]);
+  );
     return;
   } catch (error) {
     throw error;

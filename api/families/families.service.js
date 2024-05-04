@@ -16,7 +16,8 @@ const getFamilies = async () => {
           model: Game,
           where: {
             deleted: false,
-          }
+          },
+          required: false
         }
       ]
     });
@@ -38,7 +39,8 @@ const getFamily = async (familyId) => {
           model: Game,
           where: {
             deleted: false,
-          }
+          },
+          required: false
         }
       ]
     });
