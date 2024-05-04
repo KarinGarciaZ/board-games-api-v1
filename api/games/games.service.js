@@ -1,10 +1,10 @@
 const { connection } = require('../../sql/connection-sql');
 const { deleteExtensionsByGameId } = require('../extensions/extensions.utils');
 const { deleteVersionsByGameId } = require('../versions/versions.utils');
-const { getBrandById } = require('../brands/brands.utils');
-const { getFamilybyId } = require('../families/families.utils');
+const { formatFile } = require('../files/files.utils');
 const {Game, Brand } = require('../../sql/models');
 const File = require("../../sql/models/file");
+const { sequelize } = require('../../sql/sequelize-connection');
 
 const getGames = async () => {
   try {
@@ -52,37 +52,30 @@ const getGame = async (gameId) => {
 };
 
 const addGame = async (body, files) => {
-  const filesToSave = files.map((file, index) => {
-    return  {
-      name: file.filename,
-      url: `${process.env.FILES_BASE_URL}${file.path}`,
-      size: file.size,
-      type: file.mimetype,
-      is_main: !index
-    };
-  });
+  const t = await sequelize.transaction();
+  const filesToSave = files.map(formatFile);
   try {
-    Game.create(
+    await Game.create(
     {
       ...body,
-      files: [filesToSave]
+      files: filesToSave
     },
     {
-      include: [
-        {
-          association: File
-        }
-      ]
+      include: File,
+      transaction: t
     }
   );
+    await t.commit();
     return;
   } catch (error) {
+    await t.rollback();
     throw error;
   }
 };
 
 const updateGame = async (id, body) => {
   try {
+
     await connection.query(`UPDATE games SET ? WHERE id = ?`, [body, id]);
     return;
   } catch (error) {

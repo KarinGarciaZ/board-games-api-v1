@@ -1,6 +1,7 @@
 const { connection } = require('../../sql/connection-sql');
-const { saveFile, deleteFile, updateFileMainColumn } = require('../files/files.utils');
+const { formatFile, deleteFile, updateFileMainColumn } = require('../files/files.utils');
 const { getExtensionFilesByExtensionId } = require('./extensions.utils');
+const { sequelize } = require('../../sql/sequelize-connection');
 const { File, Extension } = require('../../sql/models');
 
 const getExtension = async (id) => {
@@ -13,6 +14,8 @@ const getExtension = async (id) => {
       include: [
         {
           model: File,
+          required: false,
+          where: { deleted: false }
         }
       ]
     });
@@ -24,27 +27,20 @@ const getExtension = async (id) => {
 };
 
 const addExtension = async (body, files) => {
-  const newConnection = await connection.getConnection();
+  const t = await sequelize.transaction();
   try {
-    await newConnection.beginTransaction();
-    const [extension] = await newConnection.query(`INSERT INTO extensions SET ?`, [body]);
-    const extensionId = extension.insertId;
-    if (files.length) {
-      const filesIds = await Promise.all(files.map(async (file, index) => {
-        const id = await saveFile(file, index, newConnection);
-        return id;
-      }));
-
-      const extensionFile = { extension_id: extensionId }
-      for (const fileId of filesIds) {
-        extensionFile.file_id = fileId;
-        await newConnection.query(`INSERT INTO extensions_files SET ?`, [extensionFile]);
-      }
-    };
-    await newConnection.commit();
+    const filesToSave = files.map(formatFile);
+    await Extension.create({
+      ...body,
+      files: filesToSave
+    },{
+      include: File,
+      transaction: t
+    });
+    await t.commit();
     return;
   } catch (error) {
-    await newConnection.rollback();
+    await t.rollback();
     throw error
   }
 };

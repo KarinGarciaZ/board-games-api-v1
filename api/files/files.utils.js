@@ -1,14 +1,13 @@
-const saveFile = async (file, conn, index = 1) => {
+const formatFile = (file, index) => {
   try {
     const fileToSave = {
       name: file.filename,
       url: `${process.env.FILES_BASE_URL}${file.path}`,
-      size: file.size,
+      sie: file.size,
       type: file.mimetype,
-      is_main: !index 
+      is_ain: !index 
     };
-    const [createdFile] = await conn.query('INSERT INTO files SET ?', [fileToSave]);
-    return createdFile.insertId;
+    return fileToSave;
   } catch (error) {
     throw error;
   }
@@ -32,4 +31,4 @@ const updateFileMainColumn = async (value, fileId, conn) => {
   }
 };
 
-module.exports = { saveFile, updateFileMainColumn, deleteFile };
+module.exports = { formatFile, updateFileMainColumn, deleteFile };
