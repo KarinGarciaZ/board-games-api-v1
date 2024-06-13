@@ -1,6 +1,4 @@
-const { connection } = require('../../sql/connection-sql');
-const { formatFile, deleteFile, updateFileMainColumn } = require('../files/files.utils');
-const { getExtensionFilesByExtensionId } = require('./extensions.utils');
+const { formatFile } = require('../files/files.utils');
 const { sequelize } = require('../../sql/sequelize-connection');
 const { File, Extension } = require('../../sql/models');
 
@@ -45,63 +43,101 @@ const addExtension = async (body, files) => {
   }
 };
 
-const updateExtension = async (id, extension, imagesToDelete, mainImage, files) => {
-  const newConnection = await connection.getConnection();
+const updateExtension = async (id, extension, imagesToDelete, mainImageId, files) => {
+  if (!mainImageId && !files.length) throw 'Bad request';
+  const t = await sequelize.transaction();
   try {
-    newConnection.beginTransaction();
-    let firstNewFileId;
-    if (files.length) {
-      const filesIds = await Promise.all(files.map(async (file, index) => {
-        const id = await saveFile(file, newConnection, index);
-        return id;
-      }));
-      const extensionFile = { extensions_id: id }
-      for (const fileId of filesIds) {
-        extensionFile.file_id = fileId;
-        await newConnection.query(`INSERT INTO extensions_files SET ?`, [extensionFile]);
+    const filesToSave = files.map(formatFile);
+
+    if (imagesToDelete && imagesToDelete.length) {
+      await File.update(
+        { deleted: true },
+        {
+          where: {
+            id: [...imagesToDelete]
+          },
+          transaction: t
+        }
+      );
+    }
+
+    const extensionToSave = await Extension.findOne({
+      where: { id, deleted: false },
+      include: [
+        {
+          model: File,
+          where: { deleted: false },
+          required: false,
+        }
+      ],
+      transaction: t
+    })
+
+    const fileIds = extensionToSave.files.map( file => file.id );
+
+    await File.update(
+      { is_main: false },
+      {
+        where: {
+          id: fileIds,
+          is_main: true
+        },
+        transaction: t
       }
-      firstNewFileId = filesIds[0];
-    };
-    const extensionFiles = await getExtensionFilesByExtensionId(id, newConnection);
+    );
 
-    for (const extensionFile of extensionFiles) {
-      updateFileMainColumn(false, extensionFile.file_id, newConnection);
-    };
-    if  (mainImage) {
-      await updateFileMainColumn(true, mainImage, newConnection);
-    }  else {
-      await updateFileMainColumn(true, firstNewFileId, newConnection);
-    };
-
-    if (imagesToDelete) {
-      for (const image of imagesToDelete ) {
-        await deleteFile(image, newConnection);
+    if (mainImageId) {
+      await File.update(
+        { is_main: true },
+        {
+          where: {
+            id: mainImageId
+          },
+          transaction: t
+        }
+      );
+      if (filesToSave[0]) {
+        filesToSave[0].is_main = false;
       }
-    };
+    }
 
-    await newConnection.query(`UPDATE extensions SET ? WHERE id = ?`, [extension, id]);
-    await newConnection.commit();
+    await Extension.update(
+      { ...extension },
+      {
+        where: { id },
+        transaction: t
+      }
+    );
+
+    const createdFiles = await File.bulkCreate(
+      [ ...filesToSave ],
+      {
+        include: { model: Extension, where: { id } },
+        transaction: t
+      }
+    );
+
+    await extensionToSave.addFiles(createdFiles, { transaction: t });
+
+    await t.commit();
     return;
-  } catch (error){
-    await newConnection.rollback();
+  } catch (error) {
+    await t.rollback();
     throw error
   }
 };
 
 const deleteExtension = async (id) => {
-  const newConnection = await connection.getConnection();
   try {
-    newConnection.beginTransaction();
-    const [filesIds] = await newConnection.query(`SELECT file_id from extensions_files WHERE extension_id = ?`, [id]);
-    for (const fileId of filesIds) {
-      await newConnection.query(`UPDATE files SET deleted = true WHERE id = ?`, [fileId.file_id]);
-    }
-    await newConnection.query(`UPDATE extensions SET deleted = true WHERE id = ?`, [id]);
-    newConnection.commit();
-    return;
+    const extension = await Extension.update({ deleted: true }, {
+      where: {
+        id,
+      },
+    });
+
+    return extension ?? {};
   } catch (error) {
-    newConnection.rollback();
-    throw (error)
+    throw error;
   }
 }
 

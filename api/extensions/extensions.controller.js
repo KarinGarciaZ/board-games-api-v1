@@ -29,12 +29,12 @@ router.post('/', upload.array('file'), async (req, res) => {;
 router.put('/:id', upload.array('file'), async (req, res) => {
   const id = req.params.id;
   const body = JSON.parse(req.body.data);
-  const {id: bodyId, imagesToDelete, mainImage, ...extension} = body
+  const {id: bodyId, imagesToDelete, mainImageId, ...extension} = body
   try {
     await ExtensionsService.updateExtension(id,
       extension,
       imagesToDelete,
-      mainImage,
+      mainImageId,
       req.files);
     res.status(201).send();
   } catch (error) {

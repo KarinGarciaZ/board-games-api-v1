@@ -1,42 +1,11 @@
 const { connection } = require('../../sql/connection-sql');
-const { File, Version } = require('../../sql/models');
+const { Version } = require('../../sql/models');
 
 const deleteVersionsByGameId = async (gameId, t) => {
   try {
-    const versions = await Version.findAll({
-      where: { gameId },
-      include: [
-        {
-          model: File,
-          required: false,
-          where: { deleted: false }
-        }
-      ]
-    });
-
-    let files = [];
-    versions.forEach(version => {
-      files = [...files, ...version.files];
-    });
-    const fileIds = files.map(file => file.id);
-
     await Version.update(
       { deleted: true },
-      {
-        where: {
-          gameId
-        },
-        transaction: t
-      }
-    );
-    await File.update(
-      { deleted: true },
-      {
-        where: {
-          id: [...fileIds]
-        },
-        transaction: t
-      }
+      { where: { gameId } }
     );
     return;
   } catch (error){

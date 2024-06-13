@@ -3,9 +3,9 @@ const formatFile = (file, index) => {
     const fileToSave = {
       name: file.filename,
       url: `${process.env.FILES_BASE_URL}${file.path}`,
-      sie: file.size,
+      size: file.size,
       type: file.mimetype,
-      is_ain: !index 
+      is_main: !index
     };
     return fileToSave;
   } catch (error) {
