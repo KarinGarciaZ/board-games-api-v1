@@ -14,41 +14,24 @@ const deleteVersionsByGameId = async (gameId, t) => {
 };
 
 const getVersionsByGameId = async (gameId) => {
-  const newConnection = await connection.getConnection();
   try {
-    await newConnection.beginTransaction();
-    const versionsToReturn = [];
-    const [versions] = await newConnection.query(
-      'SELECT * FROM versions where game_id = ? AND deleted = false', [gameId]
-    );
-    for (const version of versions) {
-      const filesVersions = await getVersionsFilesByVersionId(version.id, newConnection);
-      const files = [];
-      for (const fileVersion of filesVersions) {
-        const [filesRows] = await newConnection.query('SELECT * FROM files WHERE id = ? AND deleted = false', [fileVersion.file_id]);
-        if (filesRows.length) {
-          files.push(filesRows[0]);
-        }
+    const versions = await Version.findAll(
+      { 
+        where: { gameId, deleted: false },
+        include: [{ 
+          model: File, 
+          where: { deleted: false },
+          required: false
+        }]
       }
-      versionsToReturn.push({...version, files});
-    }
-    await newConnection.commit();
-    return versionsToReturn;
+    )
+    return versions;
   } catch (error) {
-    await newConnection.rollback();
     throw error;
   }
-};
-
-const getVersionsFilesByVersionId = async (versionId, conn) => {
-  const [filesVersions] = await conn.query(
-    'SELECT * from version_files WHERE version_id = ?',[versionId]
-  );
-  return filesVersions;
 };
 
 module.exports = {
   deleteVersionsByGameId,
   getVersionsByGameId,
-  getVersionsFilesByVersionId
 };

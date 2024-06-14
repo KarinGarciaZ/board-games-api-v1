@@ -5,7 +5,7 @@ const formatFile = (file, index) => {
       url: `${process.env.FILES_BASE_URL}${file.path}`,
       size: file.size,
       type: file.mimetype,
-      is_main: !index
+      is_main: !index 
     };
     return fileToSave;
   } catch (error) {

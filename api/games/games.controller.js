@@ -60,12 +60,12 @@ router.post('/', upload.array('file'), async (req, res) => {
 router.put('/:id', upload.array('file'), async (req, res) => {
     const id = req.params.id;
     const body = JSON.parse(req.body.data);
-  const {id: bodyId, imagesToDelete, mainImage, ...game} = body
+  const {id: bodyId, imagesToDelete, mainImageId, ...game} = body
     try {
       await Games.updateGame(id,
         game,
         imagesToDelete,
-        mainImage,
+        mainImageId,
         req.files
       )
       res.status(201).send();
