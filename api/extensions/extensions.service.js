@@ -44,63 +44,72 @@ const addExtension = async (body, files) => {
 };
 
 const updateExtension = async (id, extension, imagesToDelete, mainImageId, files) => {
-  if (!mainImageId && !files.length) throw 'Bad request';
   const t = await sequelize.transaction();
   try {
-    const filesToSave = files.map(formatFile);
+    if (mainImageId || files.length) {
+      const filesToSave = files.map(formatFile);
 
-    if (imagesToDelete && imagesToDelete.length) {
-      await File.update(
-        { deleted: true },
-        {
-          where: {
-            id: [...imagesToDelete]
-          },
-          transaction: t
-        }
-      );
-    }
-
-    const extensionToSave = await Extension.findOne({
-      where: { id, deleted: false },
-      include: [
-        {
-          model: File,
-          where: { deleted: false },
-          required: false,
-        }
-      ],
-      transaction: t
-    })
-
-    const fileIds = extensionToSave.files.map( file => file.id );
-
-    await File.update(
-      { is_main: false },
-      {
-        where: {
-          id: fileIds,
-          is_main: true
-        },
+      if (imagesToDelete && imagesToDelete.length) {
+        await File.update(
+          { deleted: true },
+          {
+            where: {
+              id: [...imagesToDelete]
+            },
+            transaction: t
+          }
+        );
+      }
+  
+      const extensionToSave = await Extension.findOne({
+        where: { id, deleted: false },
+        include: [
+          {
+            model: File,
+            where: { deleted: false },
+            required: false,
+          }
+        ],
         transaction: t
-      }
-    );
-
-    if (mainImageId) {
+      })
+  
+      const fileIds = extensionToSave.files.map( file => file.id );
+  
       await File.update(
-        { is_main: true },
+        { is_main: false },
         {
           where: {
-            id: mainImageId
+            id: fileIds,
+            is_main: true
           },
           transaction: t
         }
       );
-      if (filesToSave[0]) {
-        filesToSave[0].is_main = false;
+  
+      if (mainImageId) {
+        await File.update(
+          { is_main: true },
+          {
+            where: {
+              id: mainImageId
+            },
+            transaction: t
+          }
+        );
+        if (filesToSave[0]) {
+          filesToSave[0].is_main = false;
+        }
+      }
+  
+      if (filesToSave.length) {
+        const createdFiles = await File.bulkCreate(
+          [ ...filesToSave ],
+          { transaction: t }
+        );
+    
+        await extensionToSave.addFiles(createdFiles, { transaction: t });
       }
     }
-
     await Extension.update(
       { ...extension },
       {
@@ -108,17 +117,6 @@ const updateExtension = async (id, extension, imagesToDelete, mainImageId, files
         transaction: t
       }
     );
-
-    const createdFiles = await File.bulkCreate(
-      [ ...filesToSave ],
-      {
-        include: { model: Extension, where: { id } },
-        transaction: t
-      }
-    );
-
-    await extensionToSave.addFiles(createdFiles, { transaction: t });
-
     await t.commit();
     return;
   } catch (error) {
@@ -129,13 +127,12 @@ const updateExtension = async (id, extension, imagesToDelete, mainImageId, files
 
 const deleteExtension = async (id) => {
   try {
-    const extension = await Extension.update({ deleted: true }, {
+    await Extension.update({ deleted: true }, {
       where: {
         id,
       },
     });
-
-    return extension ?? {};
+    return;
   } catch (error) {
     throw error;
   }

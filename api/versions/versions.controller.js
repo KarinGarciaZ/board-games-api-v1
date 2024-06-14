@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/', upload.array('file'), async (req, res) => {
   try {
-    const body = JSON.parse(req.body.versionData);
+    const body = JSON.parse(req.body.data);
     body.id = null;
     
     await Versions.createVersion(body, req.files);
